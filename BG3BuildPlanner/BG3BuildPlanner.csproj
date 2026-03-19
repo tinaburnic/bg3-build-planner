@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="lab-1\agent_log.txt" />
+    <Content Include=".github\hooks\copilot-hooks.json" />
+  </ItemGroup>
+
 </Project>
