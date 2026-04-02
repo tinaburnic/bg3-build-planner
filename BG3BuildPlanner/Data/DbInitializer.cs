@@ -13,10 +13,13 @@ namespace BG3BuildPlanner.Data
 		{
 			context.Database.EnsureCreated();
 
+			// DB already seeded.
 			if (context.Characters.Any())
 			{
+				return;
+			}
 
-			    var timestamp = DateTime.UtcNow;
+			var timestamp = DateTime.UtcNow;
 
 			    var astarion = new Character
 				{
@@ -120,10 +123,8 @@ namespace BG3BuildPlanner.Data
 					}
 				};
 			
-
-			    context.Characters.AddRange(astarion, shadowheart, Wyll);
-			    context.SaveChanges();
-		    }
+			context.Characters.AddRange(astarion, shadowheart, Wyll);
+			context.SaveChanges();
         }
 	}
 }

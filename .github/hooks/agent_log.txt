@@ -241,3 +241,115 @@ WHERE Title IS NOT NULL AND Title LIKE '%paladin%'
 -
 
 
+can you print several linq from BuildQueryExtensions using data from DbInitializer to console?
+
+User: i want to make a couple of linq like top builds, all builds for a certain character, filter by dificulty etc. you can add more if you think they are sutable. put them where you think is the best you can even make a new class if you would like
+
+GitHub Copilot: I’m going to (1) inspect your `Build`, `Character`, and related models to see what fields exist (difficulty, ratings, etc.), then (2) add a small query layer that exposes reusable LINQ `IQueryable` methods like “top builds”, “builds for character”, and “filter by difficulty”, and finally (3) wire it into the DbContext usage pattern so you can call it from controllers or anywhere else.
+
+Created 3 todos
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Data/ApplicationDbContext.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Models/Enums.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Models/Build.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Models/Character.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Models/Rating.cs)
+
+Got it — your models already have `Difficulty`, `CharacterId`, and `Ratings`, so we can build clean EF-friendly LINQ helpers on top of `IQueryable<Build>`. Next I’ll scan existing controllers/initializer just to match patterns, then I’ll add a `BuildQueryExtensions` class under `Data/Queries`.
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Program.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Data/DbInitializer.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Controllers/HomeController.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Models/Skill.cs)
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Models/Item.cs)
+
+Next step: I’ll add a small `BuildQueryExtensions` helper with EF-friendly `IQueryable` LINQ methods (top builds, by character, by difficulty, plus a few useful extras like search by title, item type, and skill). Then I’ll run `dotnet build` to ensure everything compiles.
+
+Created [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Data/Queries/BuildQueryExtensions.cs)
+
+Starting: *Validate build and fix errors* (3/3)
+
+Ran terminal command: dotnet build .\BG3BuildPlanner.slnx -c Debug
+
+Build is failing because the project currently doesn’t reference Entity Framework Core packages (so `Microsoft.EntityFrameworkCore` can’t be resolved). Next I’ll inspect the `.csproj` and add the missing EF Core package references (including InMemory provider), then rebuild.
+
+Read [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/BG3BuildPlanner.csproj)
+
+Generating patch (15 lines) in [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/BG3BuildPlanner.csproj)
+
+
+```
+
+```
+
+
+Ran terminal command: dotnet restore .\BG3BuildPlanner\BG3BuildPlanner.csproj
+
+Ran terminal command: dotnet build .\BG3BuildPlanner.slnx -c Debug
+
+Completed: *Validate build and fix errors* (3/3)
+
+Implemented a reusable set of EF-friendly “LINQ-like” queries for builds.
+
+**What Changed**
+- Added query extensions in BuildQueryExtensions.cs:
+  - `TopByAverageRating(take, minRatings)` (your “top builds”)
+  - `ForCharacter(characterId)` and `ForCharacter(characterName)` (all builds for a character)
+  - `WithDifficulty(difficulty)` and `WithDifficulty(difficulty?)` (filter by difficulty)
+  - Extras that fit your model well: `SearchTitle(query)`, `WithItemType(itemType)`, `WithSkill(skillName)`, `OrderByNewest()`, `OrderByPopularity()`, `WithDetails()` (includes Character/Items/Skills/Ratings), and `SelectRatingStats()` (projection with avg + count).
+- Added missing EF Core package references so the project compiles: BG3BuildPlanner.csproj
+
+**How To Use (example)**
+- In a controller/service, add `using BG3BuildPlanner.Data.Queries;` then chain:
+  - `_context.Builds.WithDetails().TopByAverageRating(5, minRatings: 2)`
+  - `_context.Builds.ForCharacter(\"Astarion\").WithDifficulty(Difficulty.Hard).OrderByNewest()`
+  - `_context.Builds.WithItemType(ItemType.Weapon).WithSkill(\"Sneak Attack\")`
+
+If you want, I can also wire one of these queries into a new controller action (e.g., `/Builds/Top`) so you can see the results in a view.
+
+Made changes.
+
+User: can you print several linq from BuildQueryExtensions using data from DbInitializer to console?
+
+GitHub Copilot: I’ll wire a few example queries into Program.cs right after seeding so they print on app startup, and I’ll fix a small seeding bug in `DbInitializer` (it currently only seeds when data already exists, which prevents your sample data from appearing).
+
+Generating patch (29 lines) in [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Data/DbInitializer.cs)
+
+
+```
+
+```
+
+
+Generating patch (55 lines) in [](file:///c%3A/Users/Tina/source/repos/BG3BuildPlanner/BG3BuildPlanner/Program.cs)
+
+
+```
+
+```
+Now I’ll rebuild and (optionally) run the app once so you can see the console output from those LINQ queries and confirm the seed data is actually present.
+
+Ran terminal command: dotnet build .\BG3BuildPlanner.slnx -c Debug
+
+Ran terminal command: dotnet run --project .\BG3BuildPlanner\BG3BuildPlanner.csproj
+
+Added startup console output that runs several queries from your `BuildQueryExtensions` against the seeded data.
+
+**What Changed**
+- Fixed seeding so it actually inserts data into an empty DB (it previously only seeded when characters already existed): DbInitializer.cs
+- Added console prints right after `DbInitializer.Initialize(context)` using your extension methods (Top builds, builds for Astarion, Tactician builds, title search “Blade”, popularity): Program.cs
+
+**How To See The Output**
+- Run: `dotnet run --project .\BG3BuildPlanner\BG3BuildPlanner.csproj`
+- The console will print a section titled: `=== BG3BuildPlanner: Sample LINQ Queries ===` during app startup.
+
+Made changes.
+
