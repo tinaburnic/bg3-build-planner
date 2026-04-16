@@ -4,40 +4,66 @@
     ViewData["Title"] = "Home";
 }
 
-<section class="fantasy-hero mb-5">
-    <div class="fantasy-veil"></div>
-    <div class="fantasy-content">
-        <p class="eyebrow">Baldur's Gate 3 Build Planner</p>
-        <h1>Forge Your Legend</h1>
-        <p class="lead-text">
-            Explore handcrafted character plans, compare featured builds, and shape your next campaign with purpose.
-        </p>
-        <div class="quick-nav">
-            <a class="quick-link" asp-controller="Character" asp-action="Index">Characters</a>
-            <a class="quick-link" asp-controller="Build" asp-action="Index">Builds</a>
-            <a class="quick-link" asp-controller="Skill" asp-action="Index">Skills</a>
+<section class="home-hero reveal-up">
+    <div class="home-hero__backdrop"></div>
+    <div class="home-hero__content">
+        <div class="home-hero__intro">
+            <p class="section-label">About</p>
+            <h1>Forge Your Legend in Baldur's Gate 3</h1>
+            <p class="hero-lead">
+                Gather your party and craft battle-ready character plans. Compare classes, skills, and item choices
+                to build a strategy that survives every encounter.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-gold" asp-controller="Build" asp-action="Index">Browse Builds</a>
+                <a class="btn btn-outline-gold" asp-controller="Character" asp-action="Index">Explore Full Cast</a>
+            </div>
         </div>
+        <aside class="home-hero__panel">
+            <p class="section-label">Planner Highlights</p>
+            <ul class="hero-points">
+                <li>Compare featured builds and difficulty tiers</li>
+                <li>Review average ratings before you commit</li>
+                <li>Jump straight into skills and character details</li>
+            </ul>
+            <div class="hero-quick-nav">
+                <a asp-controller="Character" asp-action="Index">Characters</a>
+                <a asp-controller="Build" asp-action="Index">Builds</a>
+                <a asp-controller="Skill" asp-action="Index">Skills</a>
+            </div>
+        </aside>
     </div>
 </section>
 
-<section class="featured-section">
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
-        <h2 class="mb-0">Featured Builds</h2>
-        <a asp-controller="Build" asp-action="Index" class="all-builds-link">View all builds</a>
+<section class="feature-banner reveal-up" aria-label="Feature Banner">
+    <p class="section-label">New Engine</p>
+    <h2>Next Generation RPG Planning</h2>
+    <p>
+        Build smarter with class synergy, role planning, and skill pathing in one place. Your choices define the run.
+    </p>
+</section>
+
+<section class="featured-section reveal-up">
+    <div class="featured-header">
+        <div>
+            <p class="section-label mb-1">Featured</p>
+            <h2 class="mb-0">Top Builds</h2>
+        </div>
+        <a asp-controller="Build" asp-action="Index" class="btn btn-outline-gold">View All Builds</a>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-3 g-lg-4">
         @foreach (var build in Model.FeaturedBuilds)
         {
             var average = build.Ratings.Any() ? build.Ratings.Average(r => r.Score) : 0;
 
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-md-6 col-xl-4">
                 <article class="build-card h-100">
                     <p class="build-difficulty">@build.Difficulty</p>
                     <h3>@build.Title</h3>
                     <p class="build-description">@build.Description</p>
                     <p class="build-meta">Rating: @average.ToString("0.00") / 5 (@build.Ratings.Count votes)</p>
-                    <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id" class="details-link">Read build details</a>
+                    <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id" class="details-link">Read Build Details</a>
                 </article>
             </div>
         }

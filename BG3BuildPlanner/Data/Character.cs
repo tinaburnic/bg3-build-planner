@@ -7,6 +7,7 @@ namespace BG3BuildPlanner.Data
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string? PortraitUrl { get; set; }
         public string Race { get; set; }
         public string Background { get; set; }
         public int Level { get; set; }

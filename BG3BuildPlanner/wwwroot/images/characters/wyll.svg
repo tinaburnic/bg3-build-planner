@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Wyll portrait placeholder</title>
+  <desc id="desc">Stylized dark fantasy portrait card for Wyll.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#130f0d"/>
+      <stop offset="55%" stop-color="#2a1c14"/>
+      <stop offset="100%" stop-color="#0d0f12"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="24%" r="60%">
+      <stop offset="0%" stop-color="#cf8743" stop-opacity="0.44"/>
+      <stop offset="100%" stop-color="#cf8743" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="1200" fill="url(#bg)"/>
+  <rect width="900" height="1200" fill="url(#glow)"/>
+  <rect x="42" y="42" width="816" height="1116" fill="none" stroke="#d8b36a" stroke-opacity="0.6" stroke-width="2"/>
+  <path d="M178 900c56-192 151-294 278-304 118-10 203 64 274 224" fill="none" stroke="#f0d4aa" stroke-opacity="0.3" stroke-width="32" stroke-linecap="round"/>
+  <circle cx="438" cy="436" r="140" fill="#f0d4aa" fill-opacity="0.13"/>
+  <text x="450" y="520" text-anchor="middle" fill="#f3e0b7" fill-opacity="0.9" font-family="Cinzel, Georgia, serif" font-size="150" font-weight="700">W</text>
+  <text x="450" y="1090" text-anchor="middle" fill="#f3e0b7" fill-opacity="0.9" font-family="Lato, Segoe UI, sans-serif" font-size="46" letter-spacing="4">WYLL</text>
+</svg>

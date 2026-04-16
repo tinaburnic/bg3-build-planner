@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait placeholder</title>
+  <desc id="desc">Fallback portrait card.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12110f"/>
+      <stop offset="60%" stop-color="#201a15"/>
+      <stop offset="100%" stop-color="#0f1116"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1200" fill="url(#bg)"/>
+  <rect x="42" y="42" width="816" height="1116" fill="none" stroke="#d8b36a" stroke-opacity="0.58" stroke-width="2"/>
+  <circle cx="450" cy="460" r="170" fill="#d8b36a" fill-opacity="0.14"/>
+  <text x="450" y="520" text-anchor="middle" fill="#f3e0b7" fill-opacity="0.9" font-family="Cinzel, Georgia, serif" font-size="140" font-weight="700">?</text>
+  <text x="450" y="1090" text-anchor="middle" fill="#f3e0b7" fill-opacity="0.9" font-family="Lato, Segoe UI, sans-serif" font-size="44" letter-spacing="4">COMPANION</text>
+</svg>

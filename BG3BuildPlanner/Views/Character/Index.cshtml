@@ -4,28 +4,35 @@
     ViewData["Title"] = "Characters";
 }
 
-<h1>Characters</h1>
+<section class="character-index-shell reveal-up" aria-label="Character Index">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Race</th>
-            <th>Background</th>
-            <th>Level</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var character in Model)
-    {
-        <tr>
-            <td>
-                <a asp-action="Details" asp-route-id="@character.Id">@character.Name</a>
-            </td>
-            <td>@character.Race</td>
-            <td>@character.Background</td>
-            <td>@character.Level</td>
-        </tr>
-    }
-    </tbody>
-</table>
+    <p class="section-label">Key Companions</p>
+    <h1 class="character-index-title">Character Roster</h1>
+    <p class="character-index-lead">
+        Browse each companion and inspect core traits before jumping into full build details.
+        Every profile links directly to a deeper tactical breakdown.
+    </p>
+
+    <div class="character-grid">
+        @foreach (var character in Model)
+        {
+            <a asp-action="Details" asp-route-id="@character.Id" class="character-card-link" aria-label="View details for @character.Name">
+                <article class="character-card">
+                    <header class="character-card-header">
+                        <h2 class="character-name">@character.Name</h2>
+                    </header>
+                    <div class="character-card-body">
+                        <div class="character-detail"><span class="detail-label">Race</span> @character.Race</div>
+                        <div class="character-detail"><span class="detail-label">Background</span> @character.Background</div>
+                        <div class="character-detail"><span class="detail-label">Level</span> @character.Level</div>
+                    </div>
+                </article>
+            </a>
+        }
+    </div>
+</section>
+

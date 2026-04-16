@@ -17,6 +17,7 @@ namespace BG3BuildPlanner.Data.Mock
                 {
                     Id = 1,
                     Name = "Astarion",
+                    PortraitUrl = "/images/characters/astarion.jpg",
                     Race = "High Elf",
                     Background = "Charlatan",
                     Level = 5,
@@ -26,6 +27,7 @@ namespace BG3BuildPlanner.Data.Mock
                 {
                     Id = 2,
                     Name = "Shadowheart",
+                    PortraitUrl = "/images/characters/shadowheart.jpg",
                     Race = "Half-Elf",
                     Background = "Acolyte",
                     Level = 5,
@@ -35,6 +37,7 @@ namespace BG3BuildPlanner.Data.Mock
                 {
                     Id = 3,
                     Name = "Wyll",
+                    PortraitUrl = "/images/characters/Wyll.jpg",
                     Race = "Human",
                     Background = "Noble",
                     Level = 5,
@@ -73,6 +76,7 @@ namespace BG3BuildPlanner.Data.Mock
             }
 
             existing.Name = updatedCharacter.Name;
+            existing.PortraitUrl = updatedCharacter.PortraitUrl;
             existing.Race = updatedCharacter.Race;
             existing.Background = updatedCharacter.Background;
             existing.Level = updatedCharacter.Level;

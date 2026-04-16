@@ -1,24 +1,49 @@
 @model BG3BuildPlanner.Data.Character
 
 @{
-    ViewData["Title"] = "Character Details";
+    ViewData["Title"] = Model.Name;
+    var portraitUrl = string.IsNullOrWhiteSpace(Model.PortraitUrl)
+        ? Url.Content("~/images/characters/placeholder.svg")
+        : Url.Content("~" + Model.PortraitUrl);
 }
 
-<h1>@Model.Name</h1>
+<section class="character-detail-shell reveal-up" aria-label="Character Detail">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
 
-<div>
-    <dl class="row">
-        <dt class="col-sm-2">Race</dt>
-        <dd class="col-sm-10">@Model.Race</dd>
+    <p class="section-label">Character Profile</p>
+    <h1 class="character-detail-title">@Model.Name</h1>
 
-        <dt class="col-sm-2">Background</dt>
-        <dd class="col-sm-10">@Model.Background</dd>
+    <div class="character-detail-layout">
+        <figure class="character-portrait-panel">
+            <img src="@portraitUrl" alt="Portrait of @Model.Name" class="character-portrait-image" />
+            <figcaption class="character-portrait-caption">Companion Portrait</figcaption>
+        </figure>
 
-        <dt class="col-sm-2">Level</dt>
-        <dd class="col-sm-10">@Model.Level</dd>
-    </dl>
-</div>
+        <article class="character-detail-card" aria-label="Character Stats">
+            <header class="character-detail-card-header">
+                <p class="section-label mb-1">Details</p>
+                <h2>@Model.Name</h2>
+            </header>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+            <dl class="character-stat-table">
+                <div class="character-stat-row">
+                    <dt>Race</dt>
+                    <dd>@Model.Race</dd>
+                </div>
+                <div class="character-stat-row">
+                    <dt>Background</dt>
+                    <dd>@Model.Background</dd>
+                </div>
+                <div class="character-stat-row">
+                    <dt>Level</dt>
+                    <dd>@Model.Level</dd>
+                </div>
+            </dl>
+
+            <a asp-action="Index" class="btn btn-outline-gold character-detail-back">Back to Character List</a>
+        </article>
+    </div>
+</section>
