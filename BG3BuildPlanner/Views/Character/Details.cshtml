@@ -1,0 +1,24 @@
+@model BG3BuildPlanner.Data.Character
+
+@{
+    ViewData["Title"] = "Character Details";
+}
+
+<h1>@Model.Name</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Race</dt>
+        <dd class="col-sm-10">@Model.Race</dd>
+
+        <dt class="col-sm-2">Background</dt>
+        <dd class="col-sm-10">@Model.Background</dd>
+
+        <dt class="col-sm-2">Level</dt>
+        <dd class="col-sm-10">@Model.Level</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

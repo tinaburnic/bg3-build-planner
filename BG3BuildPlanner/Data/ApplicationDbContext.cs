@@ -1,4 +1,4 @@
-using BG3BuildPlanner.Models;
+using BG3BuildPlanner.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BG3BuildPlanner.Data
@@ -19,3 +19,4 @@ namespace BG3BuildPlanner.Data
 		public DbSet<AbilityScore> AbilityScores { get; set; }
 	}
 }
+

@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using BG3BuildPlanner.Models;
+using BG3BuildPlanner.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BG3BuildPlanner.Data.Queries;
@@ -138,3 +138,4 @@ public sealed record BuildRatingStats(
 	double AverageScore,
 	int RatingCount,
 	DateTime CreatedAt);
+

@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .github\\hooks\\log-agent-event.ps1"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .github\\hooks\\log-agent-event.ps1"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .github\\hooks\\log-agent-event.ps1"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .github\\hooks\\log-agent-event.ps1"
+      }
+    ]
+  }
+}

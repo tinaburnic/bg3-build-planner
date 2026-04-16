@@ -1,8 +1,46 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model BG3BuildPlanner.Models.HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="fantasy-hero mb-5">
+    <div class="fantasy-veil"></div>
+    <div class="fantasy-content">
+        <p class="eyebrow">Baldur's Gate 3 Build Planner</p>
+        <h1>Forge Your Legend</h1>
+        <p class="lead-text">
+            Explore handcrafted character plans, compare featured builds, and shape your next campaign with purpose.
+        </p>
+        <div class="quick-nav">
+            <a class="quick-link" asp-controller="Character" asp-action="Index">Characters</a>
+            <a class="quick-link" asp-controller="Build" asp-action="Index">Builds</a>
+            <a class="quick-link" asp-controller="Skill" asp-action="Index">Skills</a>
+        </div>
+    </div>
+</section>
+
+<section class="featured-section">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
+        <h2 class="mb-0">Featured Builds</h2>
+        <a asp-controller="Build" asp-action="Index" class="all-builds-link">View all builds</a>
+    </div>
+
+    <div class="row g-3">
+        @foreach (var build in Model.FeaturedBuilds)
+        {
+            var average = build.Ratings.Any() ? build.Ratings.Average(r => r.Score) : 0;
+
+            <div class="col-12 col-lg-4">
+                <article class="build-card h-100">
+                    <p class="build-difficulty">@build.Difficulty</p>
+                    <h3>@build.Title</h3>
+                    <p class="build-description">@build.Description</p>
+                    <p class="build-meta">Rating: @average.ToString("0.00") / 5 (@build.Ratings.Count votes)</p>
+                    <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id" class="details-link">Read build details</a>
+                </article>
+            </div>
+        }
+    </div>
+</section>
+

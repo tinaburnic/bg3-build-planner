@@ -1,0 +1,29 @@
+@model IEnumerable<BG3BuildPlanner.Data.Build>
+
+@{
+    ViewData["Title"] = "Builds";
+}
+
+<h1>Builds</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Difficulty</th>
+            <th>Character Id</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var build in Model)
+    {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@build.Id">@build.Title</a>
+            </td>
+            <td>@build.Difficulty</td>
+            <td>@build.CharacterId</td>
+        </tr>
+    }
+    </tbody>
+</table>

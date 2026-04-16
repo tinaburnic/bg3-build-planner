@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace BG3BuildPlanner.Models
+namespace BG3BuildPlanner.Data
 {   
     public class Item
 {
@@ -14,3 +14,4 @@ namespace BG3BuildPlanner.Models
     public virtual ICollection<Build> Builds { get; set; } = new List<Build>();
 }
 }
+

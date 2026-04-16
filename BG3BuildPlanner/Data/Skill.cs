@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BG3BuildPlanner.Models
+namespace BG3BuildPlanner.Data
 {
 	public class Skill
 	{
@@ -12,3 +12,4 @@ namespace BG3BuildPlanner.Models
 		public virtual ICollection<Build> Builds { get; set; } = new List<Build>();
 	}
 }
+

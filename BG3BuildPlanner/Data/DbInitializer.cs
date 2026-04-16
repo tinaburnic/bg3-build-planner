@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BG3BuildPlanner.Models;
+using BG3BuildPlanner.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -260,3 +260,4 @@ namespace BG3BuildPlanner.Data
         }
 	}
 }
+

@@ -1,4 +1,4 @@
-namespace BG3BuildPlanner.Models
+namespace BG3BuildPlanner.Data
 {
     public class ErrorViewModel
     {
@@ -7,3 +7,4 @@ namespace BG3BuildPlanner.Models
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }
+

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BG3BuildPlanner.Models
+namespace BG3BuildPlanner.Data
 {
 	public class Build
 	{
@@ -19,3 +19,4 @@ namespace BG3BuildPlanner.Models
 		public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 	}
 }
+

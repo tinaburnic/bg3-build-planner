@@ -1,21 +1,38 @@
+using BG3BuildPlanner.Data;
+using BG3BuildPlanner.Data.Mock;
 using BG3BuildPlanner.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Linq;
 
 namespace BG3BuildPlanner.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly BuildMockRepository _buildRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, BuildMockRepository buildRepository)
         {
             _logger = logger;
+            _buildRepository = buildRepository;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var featuredBuilds = _buildRepository
+                .GetAll()
+                .OrderByDescending(b => b.Ratings.Any() ? b.Ratings.Average(r => r.Score) : 0)
+                .ThenByDescending(b => b.CreatedAt)
+                .Take(3)
+                .ToList();
+
+            var viewModel = new HomeIndexViewModel
+            {
+                FeaturedBuilds = featuredBuilds
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult Privacy()
@@ -30,3 +47,4 @@ namespace BG3BuildPlanner.Controllers
         }
     }
 }
+

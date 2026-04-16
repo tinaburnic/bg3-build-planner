@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BG3BuildPlanner.Models
+namespace BG3BuildPlanner.Data
 {
     public class Rating
     {
@@ -17,3 +17,4 @@ namespace BG3BuildPlanner.Models
         public virtual Build Build { get; set; }
     }
 }
+

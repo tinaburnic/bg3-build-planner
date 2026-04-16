@@ -20,3 +20,135 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.fantasy-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #3f3a56;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(110, 92, 150, 0.45), transparent 42%),
+    radial-gradient(circle at 85% 0%, rgba(191, 54, 101, 0.32), transparent 48%),
+    linear-gradient(135deg, #0b0a10, #141221 45%, #1a1530);
+  color: #efe8ff;
+}
+
+.fantasy-veil {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -35deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.02) 10px,
+    transparent 10px,
+    transparent 22px
+  );
+  pointer-events: none;
+}
+
+.fantasy-content {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 2rem;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  font-weight: 700;
+  color: #f0ce7f;
+}
+
+.fantasy-content h1 {
+  margin-top: 0.35rem;
+  margin-bottom: 0.75rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.lead-text {
+  max-width: 680px;
+  margin-bottom: 1.3rem;
+  color: #ddd5f1;
+}
+
+.quick-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.quick-link {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border: 1px solid #6450a0;
+  border-radius: 999px;
+  color: #f6edff;
+  font-weight: 600;
+  text-decoration: none;
+  background: linear-gradient(180deg, rgba(113, 88, 183, 0.4), rgba(54, 40, 89, 0.55));
+}
+
+.quick-link:hover {
+  color: #fff;
+  border-color: #f0ce7f;
+}
+
+.featured-section h2 {
+  color: #2a253f;
+  font-weight: 800;
+}
+
+.all-builds-link {
+  color: #503b8e;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.all-builds-link:hover {
+  text-decoration: underline;
+}
+
+.build-card {
+  border: 1px solid #ddd3f0;
+  border-radius: 14px;
+  padding: 1rem;
+  background: linear-gradient(160deg, #fff, #f7f2ff);
+  box-shadow: 0 10px 22px rgba(18, 11, 42, 0.12);
+}
+
+.build-card h3 {
+  margin-top: 0.25rem;
+  color: #241b44;
+  font-size: 1.2rem;
+}
+
+.build-difficulty {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07rem;
+  color: #b14a7a;
+  font-weight: 700;
+}
+
+.build-description {
+  color: #3b3451;
+}
+
+.build-meta {
+  color: #5f577b;
+  font-size: 0.95rem;
+}
+
+.details-link {
+  color: #3c2a7a;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .fantasy-content {
+    padding: 2.2rem 1.25rem;
+  }
+}

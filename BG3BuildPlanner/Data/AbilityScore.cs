@@ -1,4 +1,4 @@
-namespace BG3BuildPlanner.Models
+namespace BG3BuildPlanner.Data
 {
 	public class AbilityScore
 	{
@@ -14,3 +14,4 @@ namespace BG3BuildPlanner.Models
 		public virtual Build Build { get; set; }
 	}
 }
+
