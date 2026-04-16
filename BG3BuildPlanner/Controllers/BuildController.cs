@@ -22,6 +22,12 @@ namespace BG3BuildPlanner.Controllers
                 .OrderBy(b => b.Title)
                 .ToList();
 
+            var characterNamesById = _characterRepository
+                .GetAll()
+                .ToDictionary(c => c.Id, c => c.Name);
+
+            ViewData["CharacterNamesById"] = characterNamesById;
+
             return View(builds);
         }
 

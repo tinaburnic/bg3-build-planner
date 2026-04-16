@@ -34,7 +34,7 @@ namespace BG3BuildPlanner.Data
 						{
 							Title = "Crimson Stalker",
 							Description = "Bleed enemies dry with dual daggers and relentless sneak attacks.",
-							Difficulty = Difficulty.Hard,
+							Difficulty = Difficulty.Balanced,
 							CreatedAt = timestamp.AddMinutes(-60),
 							Skills = new List<Skill>
 							{
@@ -56,7 +56,7 @@ namespace BG3BuildPlanner.Data
 						{
 							Title = "Silken Infiltrator",
 							Description = "Lock down fights with poisons, stealth, and surgical crowd control.",
-							Difficulty = Difficulty.Normal,
+							Difficulty = Difficulty.Explorer,
 							CreatedAt = timestamp.AddMinutes(-30),
 							Skills = new List<Skill>
 							{
@@ -112,7 +112,7 @@ namespace BG3BuildPlanner.Data
 						{
 							Title = "Twilight Guardian",
 							Description = "Protect allies with radiant shields and crowd control.",
-							Difficulty = Difficulty.Normal,
+							Difficulty = Difficulty.Explorer,
 							CreatedAt = timestamp.AddMinutes(-55),
 							Skills = new List<Skill>
 							{
@@ -134,7 +134,7 @@ namespace BG3BuildPlanner.Data
 						{
 							Title = "Sanctuary Weaver",
 							Description = "Pure support cleric focusing on saves, healing, and emergency resets.",
-							Difficulty = Difficulty.Hard,
+							Difficulty = Difficulty.Balanced,
 							CreatedAt = timestamp.AddMinutes(-25),
 							Skills = new List<Skill>
 							{
@@ -212,7 +212,7 @@ namespace BG3BuildPlanner.Data
 						{
 							Title = "Hellfire Artillerist",
 							Description = "Ranged blaster warlock that deletes threats with force and fire.",
-							Difficulty = Difficulty.Hard,
+							Difficulty = Difficulty.Balanced,
 							CreatedAt = timestamp.AddMinutes(-20),
 							Skills = new List<Skill>
 							{
@@ -234,7 +234,7 @@ namespace BG3BuildPlanner.Data
 						{
 							Title = "Pactblade Duelist",
 							Description = "Melee pact build that trades safely and finishes with bursts.",
-							Difficulty = Difficulty.Normal,
+							Difficulty = Difficulty.Explorer,
 							CreatedAt = timestamp,
 							Skills = new List<Skill>
 							{

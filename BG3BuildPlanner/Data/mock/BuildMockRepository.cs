@@ -20,7 +20,7 @@ namespace BG3BuildPlanner.Data.Mock
                     characterId: 1,
                     title: "Crimson Stalker",
                     description: "Bleed enemies dry with dual daggers and relentless sneak attacks.",
-                    difficulty: Difficulty.Hard,
+                    difficulty: Difficulty.Balanced,
                     createdAt: timestamp.AddMinutes(-60),
                     skills: new List<Skill>
                     {
@@ -42,7 +42,7 @@ namespace BG3BuildPlanner.Data.Mock
                     characterId: 1,
                     title: "Silken Infiltrator",
                     description: "Lock down fights with poisons, stealth, and surgical crowd control.",
-                    difficulty: Difficulty.Normal,
+                    difficulty: Difficulty.Explorer,
                     createdAt: timestamp.AddMinutes(-30),
                     skills: new List<Skill>
                     {
@@ -86,7 +86,7 @@ namespace BG3BuildPlanner.Data.Mock
                     characterId: 2,
                     title: "Twilight Guardian",
                     description: "Protect allies with radiant shields and crowd control.",
-                    difficulty: Difficulty.Normal,
+                    difficulty: Difficulty.Explorer,
                     createdAt: timestamp.AddMinutes(-55),
                     skills: new List<Skill>
                     {
@@ -108,7 +108,7 @@ namespace BG3BuildPlanner.Data.Mock
                     characterId: 2,
                     title: "Sanctuary Weaver",
                     description: "Pure support cleric focusing on saves, healing, and emergency resets.",
-                    difficulty: Difficulty.Hard,
+                    difficulty: Difficulty.Balanced,
                     createdAt: timestamp.AddMinutes(-25),
                     skills: new List<Skill>
                     {
@@ -174,7 +174,7 @@ namespace BG3BuildPlanner.Data.Mock
                     characterId: 3,
                     title: "Hellfire Artillerist",
                     description: "Ranged blaster warlock that deletes threats with force and fire.",
-                    difficulty: Difficulty.Hard,
+                    difficulty: Difficulty.Balanced,
                     createdAt: timestamp.AddMinutes(-20),
                     skills: new List<Skill>
                     {
@@ -196,7 +196,7 @@ namespace BG3BuildPlanner.Data.Mock
                     characterId: 3,
                     title: "Pactblade Duelist",
                     description: "Melee pact build that trades safely and finishes with bursts.",
-                    difficulty: Difficulty.Normal,
+                    difficulty: Difficulty.Explorer,
                     createdAt: timestamp,
                     skills: new List<Skill>
                     {

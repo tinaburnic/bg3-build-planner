@@ -3,56 +3,85 @@
 @{
     ViewData["Title"] = "Build Details";
     var characterName = ViewData["CharacterName"] as string ?? "Unknown";
+    var difficultyImage = Model.Difficulty switch
+    {
+        Difficulty.Explorer => "Explorer_Difficulty.jpg",
+        Difficulty.Balanced => "Balanced_Difficulty.jpg",
+        Difficulty.Tactician => "Tactician_Difficulty.jpg",
+        _ => "Balanced_Difficulty.jpg"
+    };
 }
 
-<h1>@Model.Title</h1>
+<section class="build-detail-shell reveal-up" aria-label="Build Details">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
 
-<div>
-    <dl class="row">
-        <dt class="col-sm-2">Description</dt>
-        <dd class="col-sm-10">@Model.Description</dd>
+    <p class="section-label">Build Breakdown</p>
+    <h1 class="build-detail-title">@Model.Title</h1>
 
-        <dt class="col-sm-2">Difficulty</dt>
-        <dd class="col-sm-10">@Model.Difficulty</dd>
+    <div class="build-detail-layout">
+        <figure class="build-difficulty-panel">
+            <img src="@Url.Content($"~/images/builds/{difficultyImage}")" alt="Image representing @Model.Difficulty difficulty" class="build-difficulty-image" />
+            <figcaption class="build-difficulty-caption">@Model.Difficulty Difficulty</figcaption>
+        </figure>
 
-        <dt class="col-sm-2">Character</dt>
-        <dd class="col-sm-10">@characterName</dd>
+        <article class="build-detail-card" aria-label="Build Stats">
+            <header class="build-detail-card-header">
+                <p class="section-label mb-1">Details</p>
+                <h2>@Model.Title</h2>
+            </header>
 
-        <dt class="col-sm-2">Created</dt>
-        <dd class="col-sm-10">@Model.CreatedAt.ToString("u")</dd>
-    </dl>
-</div>
+            <dl class="build-stat-table">
+                <div class="build-stat-row">
+                    <dt>Description</dt>
+                    <dd>@Model.Description</dd>
+                </div>
+                <div class="build-stat-row">
+                    <dt>Difficulty</dt>
+                    <dd>@Model.Difficulty</dd>
+                </div>
+                <div class="build-stat-row">
+                    <dt>Character</dt>
+                    <dd>@characterName</dd>
+                </div>
+                <div class="build-stat-row">
+                    <dt>Created</dt>
+                    <dd>@Model.CreatedAt.ToString("MMMM dd, yyyy")</dd>
+                </div>
+            </dl>
+            <a asp-action="Index" class="btn btn-outline-gold build-detail-back">Back to Build List</a>
+        </article>
+    </div>
 
-<div>
-    <h3>Skills</h3>
-    <ul>
-    @foreach (var skill in Model.Skills)
-    {
-        <li>@skill.Name (Level @skill.RequiredLevel)</li>
-    }
-    </ul>
-</div>
+    <div class="build-sub-section">
+        <h3>Skills</h3>
+        <ul>
+        @foreach (var skill in Model.Skills)
+        {
+            <li>@skill.Name (Level @skill.RequiredLevel)</li>
+        }
+        </ul>
+    </div>
 
-<div>
-    <h3>Items</h3>
-    <ul>
-    @foreach (var item in Model.Items)
-    {
-        <li>@item.Name (@item.Type, @item.Rarity, Power @item.Power)</li>
-    }
-    </ul>
-</div>
+    <div class="build-sub-section">
+        <h3>Items</h3>
+        <ul>
+        @foreach (var item in Model.Items)
+        {
+            <li>@item.Name (@item.Type, @item.Rarity, Power @item.Power)</li>
+        }
+        </ul>
+    </div>
 
-<div>
-    <h3>Ratings</h3>
-    <ul>
-    @foreach (var rating in Model.Ratings)
-    {
-        <li>@rating.Score/5 - @rating.Comment</li>
-    }
-    </ul>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="build-sub-section">
+        <h3>Ratings</h3>
+        <ul>
+        @foreach (var rating in Model.Ratings)
+        {
+            <li>@rating.Score/5 - @rating.Comment</li>
+        }
+        </ul>
+    </div>
+</section>

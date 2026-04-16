@@ -2,28 +2,45 @@
 
 @{
     ViewData["Title"] = "Builds";
+    var characterNamesById = ViewData["CharacterNamesById"] as Dictionary<int, string> ?? new Dictionary<int, string>();
 }
 
-<h1>Builds</h1>
+<section class="build-index-shell reveal-up" aria-label="Build Index">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Difficulty</th>
-            <th>Character Id</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var build in Model)
-    {
-        <tr>
-            <td>
-                <a asp-action="Details" asp-route-id="@build.Id">@build.Title</a>
-            </td>
-            <td>@build.Difficulty</td>
-            <td>@build.CharacterId</td>
-        </tr>
-    }
-    </tbody>
-</table>
+    <p class="section-label">Community Builds</p>
+    <h1 class="build-index-title">Build Library</h1>
+    <p class="build-index-lead">
+        Explore a collection of builds for various playstyles and difficulties. Each build is a template for your own adventures.
+    </p>
+
+    <div class="build-grid">
+        @foreach (var build in Model)
+        {
+            var characterName = characterNamesById.TryGetValue(build.CharacterId, out var foundName)
+                ? foundName
+                : "Unknown";
+
+            var shortDescription = string.IsNullOrWhiteSpace(build.Description)
+                ? "No description available."
+                : (build.Description.Length > 110 ? build.Description.Substring(0, 107) + "..." : build.Description);
+
+            <a asp-action="Details" asp-route-id="@build.Id" class="build-index-card-link" aria-label="View details for @build.Title">
+                <article class="build-index-card">
+                    <header class="build-index-card-header">
+                        <h2 class="build-index-name">@build.Title</h2>
+                    </header>
+                    <div class="build-index-card-body">
+                        <div class="build-index-detail"><span class="detail-label">Difficulty</span> @build.Difficulty</div>
+                        <div class="build-index-detail"><span class="detail-label">Character</span> @characterName</div>
+                        <p class="build-index-description">@shortDescription</p>
+                    </div>
+                </article>
+            </a>
+        }
+    </div>
+</section>
+

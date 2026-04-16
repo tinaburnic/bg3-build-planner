@@ -641,3 +641,230 @@ a:hover {
     border-bottom: 1px solid rgba(216, 179, 106, 0.24);
   }
 }
+
+/* ==========================================================================
+   Build Index Page
+   ========================================================================== */
+
+.build-index-shell {
+    position: relative;
+    border: 1px solid var(--edge-gold);
+    border-radius: 18px;
+    padding: 2rem;
+    background: var(--panel-dark-soft);
+}
+
+.build-index-shell::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(216, 179, 106, 0.3);
+  pointer-events: none;
+}
+
+.build-index-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    margin-bottom: 0.5rem;
+}
+
+.build-index-lead {
+    color: var(--ink-muted);
+    max-width: 70ch;
+    margin-bottom: 2rem;
+}
+
+.build-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.build-index-card-link,
+.build-index-card-link:visited,
+.build-index-card-link:hover,
+.build-index-card-link:focus {
+    text-decoration: none;
+  color: inherit;
+}
+
+.build-index-card-link {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.build-index-card-link:hover,
+.build-index-card-link:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.build-index-card {
+    background: var(--bg-night-soft);
+    border: 1px solid var(--edge-gold);
+    border-radius: 12px;
+    padding: 1.25rem;
+    height: 100%;
+}
+
+.build-index-card-header .build-index-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--accent-gold-bright);
+    margin: 0;
+}
+
+.build-index-card-body {
+    margin-top: 1rem;
+    color: var(--ink-muted);
+}
+
+.build-index-detail {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.build-index-detail .detail-label {
+    font-weight: 700;
+    color: var(--ink-ivory);
+    margin-right: 0.5em;
+}
+
+.build-index-description {
+  margin: 0.6rem 0 0;
+  color: #ded4bb;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  opacity: 0.95;
+}
+
+/* ==========================================================================
+   Build Details Page
+   ========================================================================== */
+
+.build-detail-shell {
+    position: relative;
+    border: 1px solid var(--edge-gold);
+    border-radius: 18px;
+    padding: 2rem;
+    background: var(--panel-dark-soft);
+}
+
+.build-detail-shell::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(216, 179, 106, 0.3);
+  pointer-events: none;
+}
+
+.build-detail-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1.5rem;
+}
+
+.build-detail-layout {
+  position: relative;
+  z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+.build-difficulty-panel {
+    text-align: center;
+}
+
+.build-difficulty-image {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+    border: 1px solid var(--edge-gold);
+    margin-bottom: 1rem;
+}
+
+.build-difficulty-caption {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.build-detail-card {
+    background: var(--bg-night-soft);
+    border: 1px solid var(--edge-gold);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.build-detail-card-header h2 {
+    font-size: 2rem;
+    color: var(--accent-gold-bright);
+    margin-bottom: 1rem;
+}
+
+.build-stat-table {
+    margin-bottom: 1.5rem;
+}
+
+.build-stat-row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+    border-bottom: 1px solid rgba(216, 179, 106, 0.1);
+}
+
+.build-stat-row dt {
+    font-weight: 700;
+    color: var(--ink-ivory);
+  border-right: 1px solid rgba(216, 179, 106, 0.15);
+  padding: 0.85rem 1rem;
+}
+
+.build-stat-row dd {
+    margin: 0;
+    color: var(--ink-muted);
+  padding: 0.85rem 1rem;
+}
+
+.build-detail-back {
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+.build-sub-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--edge-gold);
+}
+
+.build-sub-section h3 {
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+}
+
+.build-sub-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.build-sub-section li {
+    background: rgba(0,0,0,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--accent-gold);
+}
+
+@media (max-width: 768px) {
+    .build-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+  .build-stat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .build-stat-row dt {
+    border-right: none;
+    border-bottom: 1px solid rgba(216, 179, 106, 0.15);
+  }
+}

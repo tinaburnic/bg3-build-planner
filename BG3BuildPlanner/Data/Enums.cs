@@ -1,7 +1,7 @@
 public enum Difficulty
 {
-    Normal,
-    Hard,
+    Explorer,
+    Balanced,
     Tactician
 }
 
