@@ -4,24 +4,38 @@
     ViewData["Title"] = "Skills";
 }
 
-<h1>Skills</h1>
+<section class="skill-index-shell reveal-up" aria-label="Skill Index">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Required Level</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var skill in Model)
-    {
-        <tr>
-            <td>
-                <a asp-action="Details" asp-route-id="@skill.Id">@skill.Name</a>
-            </td>
-            <td>@skill.RequiredLevel</td>
-        </tr>
-    }
-    </tbody>
-</table>
+    <p class="section-label">Arcane Arsenal</p>
+    <h1 class="skill-index-title">Skill Compendium</h1>
+
+    <div class="skill-list-shell" role="table" aria-label="Skills List">
+        <div class="skill-list-head" role="rowgroup">
+            <div class="skill-list-row skill-list-row--head" role="row">
+                <span role="columnheader">Skill</span>
+                <span role="columnheader">Description</span>
+                <span role="columnheader">Level</span>
+            </div>
+        </div>
+
+        <div role="rowgroup">
+            @foreach (var skill in Model)
+            {
+                var shortDescription = string.IsNullOrWhiteSpace(skill.Description)
+                    ? "No description available."
+                    : (skill.Description.Length > 92 ? skill.Description.Substring(0, 89) + "..." : skill.Description);
+
+                <a asp-action="Details" asp-route-id="@skill.Id" class="skill-list-row skill-list-link" role="row" aria-label="View details for @skill.Name">
+                    <span class="skill-col-name" role="cell">@skill.Name</span>
+                    <span class="skill-col-desc" role="cell">@shortDescription</span>
+                    <span class="skill-col-level" role="cell">@skill.RequiredLevel</span>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+

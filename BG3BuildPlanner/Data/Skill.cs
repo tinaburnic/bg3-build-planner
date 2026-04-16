@@ -8,6 +8,7 @@ namespace BG3BuildPlanner.Data
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public int RequiredLevel { get; set; }
+		public string ImageUrl { get; set; } = string.Empty;
 
 		public virtual ICollection<Build> Builds { get; set; } = new List<Build>();
 	}
