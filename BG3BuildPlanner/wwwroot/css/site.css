@@ -8,8 +8,101 @@
   --edge-gold: rgba(216, 179, 106, 0.38);
   --panel-dark: rgba(22, 18, 14, 0.84);
   --panel-dark-soft: rgba(14, 12, 10, 0.76);
+  --ornate-corner-color: rgba(216, 179, 106, 0.78);
   --font-display: "Cinzel", Georgia, serif;
   --font-body: "Lato", "Segoe UI", sans-serif;
+}
+
+/* Reusable ornamental corner treatment for framed panels. */
+.ornate-corners,
+.home-hero,
+.home-hero__panel,
+.feature-banner,
+.build-card,
+.character-card,
+.character-index-shell,
+.character-detail-shell,
+.skill-index-shell,
+.skill-detail-shell,
+.build-index-shell,
+.build-index-card,
+.build-detail-shell,
+.build-detail-card {
+  position: relative;
+  --ornate-corner-size: 32px;
+  --ornate-corner-offset: 8px;
+}
+
+.home-hero,
+.build-index-shell,
+.build-detail-shell {
+  --ornate-corner-size: 36px;
+  --ornate-corner-offset: 10px;
+}
+
+.home-hero__panel,
+.feature-banner,
+.build-card,
+.character-card,
+.build-index-card,
+.build-detail-card {
+  --ornate-corner-size: 26px;
+  --ornate-corner-offset: 7px;
+}
+
+.ornate-corners::after,
+.home-hero::after,
+.home-hero__panel::after,
+.feature-banner::after,
+.build-card::after,
+.character-card::after,
+.character-index-shell::after,
+.character-detail-shell::after,
+.skill-index-shell::after,
+.skill-detail-shell::after,
+.build-index-shell::after,
+.build-index-card::after,
+.build-detail-shell::after,
+.build-detail-card::after {
+  content: "";
+  position: absolute;
+  inset: var(--ornate-corner-offset);
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.92;
+  background:
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) left top / calc(var(--ornate-corner-size) * 0.72) 1px no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) left top / 1px calc(var(--ornate-corner-size) * 0.72) no-repeat,
+    radial-gradient(circle at left top, transparent calc(var(--ornate-corner-size) * 0.34), var(--ornate-corner-color) calc(var(--ornate-corner-size) * 0.34) calc(var(--ornate-corner-size) * 0.38), transparent calc(var(--ornate-corner-size) * 0.38)) left top / var(--ornate-corner-size) var(--ornate-corner-size) no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) right top / calc(var(--ornate-corner-size) * 0.72) 1px no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) right top / 1px calc(var(--ornate-corner-size) * 0.72) no-repeat,
+    radial-gradient(circle at right top, transparent calc(var(--ornate-corner-size) * 0.34), var(--ornate-corner-color) calc(var(--ornate-corner-size) * 0.34) calc(var(--ornate-corner-size) * 0.38), transparent calc(var(--ornate-corner-size) * 0.38)) right top / var(--ornate-corner-size) var(--ornate-corner-size) no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) left bottom / calc(var(--ornate-corner-size) * 0.72) 1px no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) left bottom / 1px calc(var(--ornate-corner-size) * 0.72) no-repeat,
+    radial-gradient(circle at left bottom, transparent calc(var(--ornate-corner-size) * 0.34), var(--ornate-corner-color) calc(var(--ornate-corner-size) * 0.34) calc(var(--ornate-corner-size) * 0.38), transparent calc(var(--ornate-corner-size) * 0.38)) left bottom / var(--ornate-corner-size) var(--ornate-corner-size) no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) right bottom / calc(var(--ornate-corner-size) * 0.72) 1px no-repeat,
+    linear-gradient(var(--ornate-corner-color), var(--ornate-corner-color)) right bottom / 1px calc(var(--ornate-corner-size) * 0.72) no-repeat,
+    radial-gradient(circle at right bottom, transparent calc(var(--ornate-corner-size) * 0.34), var(--ornate-corner-color) calc(var(--ornate-corner-size) * 0.34) calc(var(--ornate-corner-size) * 0.38), transparent calc(var(--ornate-corner-size) * 0.38)) right bottom / var(--ornate-corner-size) var(--ornate-corner-size) no-repeat;
+}
+
+@media (max-width: 575.98px) {
+  .ornate-corners,
+  .home-hero,
+  .home-hero__panel,
+  .feature-banner,
+  .build-card,
+  .character-card,
+  .character-index-shell,
+  .character-detail-shell,
+  .skill-index-shell,
+  .skill-detail-shell,
+  .build-index-shell,
+  .build-index-card,
+  .build-detail-shell,
+  .build-detail-card {
+    --ornate-corner-size: 22px;
+    --ornate-corner-offset: 6px;
+  }
 }
 
 html {
@@ -32,6 +125,24 @@ body {
     radial-gradient(circle at 70% -10%, rgba(217, 157, 91, 0.2), transparent 38%),
     radial-gradient(circle at 12% 28%, rgba(93, 57, 30, 0.28), transparent 34%),
     linear-gradient(160deg, #090806 0%, var(--bg-night) 42%, var(--bg-night-soft) 100%);
+}
+
+body.home-page {
+  background:
+    radial-gradient(circle at 72% 8%, rgba(245, 190, 102, 0.22), transparent 34%),
+    linear-gradient(165deg, rgba(7, 6, 5, 0.74) 0%, rgba(9, 8, 7, 0.82) 45%, rgba(8, 7, 6, 0.9) 100%),
+    url("../images/background/bg3Background.jpg") center center / cover no-repeat fixed,
+    linear-gradient(160deg, #090806 0%, var(--bg-night) 42%, var(--bg-night-soft) 100%);
+}
+
+@media (max-width: 991.98px) {
+  body.home-page {
+    background:
+      radial-gradient(circle at 74% 12%, rgba(245, 190, 102, 0.18), transparent 36%),
+      linear-gradient(165deg, rgba(7, 6, 5, 0.7) 0%, rgba(9, 8, 7, 0.8) 50%, rgba(8, 7, 6, 0.9) 100%),
+      url("../images/background/bg3Background.jpg") center center / cover no-repeat,
+      linear-gradient(160deg, #090806 0%, var(--bg-night) 42%, var(--bg-night-soft) 100%);
+  }
 }
 
 h1,
