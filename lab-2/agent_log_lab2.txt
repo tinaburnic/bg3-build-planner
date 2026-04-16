@@ -1,4 +1,4 @@
-﻿[2026-04-16] Copilot log test entry: write successful.
+[2026-04-16] Copilot log test entry: write successful.
 {"test":"hook"}
 [2026-04-16] Copilot log test entry: terminal append ok.
 [2026-04-16 10:36:25] Invalid hook JSON payload
@@ -5696,5 +5696,3 @@ Transcript file captured at session end:
 {"type":"tool.execution_complete","data":{"toolCallId":"call_bbLDpPMK4PqYeF02qUwjf2YU","success":true},"id":"c4390ba8-3a95-4412-821f-40f91490df16","timestamp":"2026-04-16T12:00:01.365Z","parentId":"cdca764e-a298-4867-bc22-6063c646cf9f"}
 {"type":"assistant.message","data":{"messageId":"9534154e-8fdb-4876-a902-b35b734e7ac2","content":"Updated the home page banner copy and removed the â€śNew Engineâ€ť line.\n\nChanges made in [BG3BuildPlanner/Views/Home/Index.cshtml](BG3BuildPlanner/Views/Home/Index.cshtml#L38):\n- Removed the eyebrow label: â€śNew Engineâ€ť\n- Changed heading to: â€śPlan Every Level with Purposeâ€ť\n- Replaced body text with BG3-specific planner language\n\nIf you want, I can also remove that entire banner section instead of keeping rewritten text.","toolRequests":[],"reasoningText":""},"id":"03782889-c2a6-4457-93c3-340e2f830a97","timestamp":"2026-04-16T12:00:20.646Z","parentId":"c4390ba8-3a95-4412-821f-40f91490df16"}
 {"type":"assistant.turn_end","data":{"turnId":"3"},"id":"7af89ce6-1ee1-476c-9485-6cad4f9dd858","timestamp":"2026-04-16T12:00:20.646Z","parentId":"03782889-c2a6-4457-93c3-340e2f830a97"}
-
-
