@@ -1,22 +1,22 @@
 using System.Linq;
-using BG3BuildPlanner.Data.Mock;
+using BG3BuildPlanner.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BG3BuildPlanner.Controllers
 {
     public class SkillController : Controller
     {
-        private readonly SkillMockRepository _skillRepository;
+        private readonly ApplicationDbContext _dbContext;
 
-        public SkillController(SkillMockRepository skillRepository)
+        public SkillController(ApplicationDbContext dbContext)
         {
-            _skillRepository = skillRepository;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
-            var skills = _skillRepository
-                .GetAll()
+            var skills = _dbContext.Skills
                 .OrderBy(s => s.Name)
                 .ToList();
 
@@ -30,7 +30,9 @@ namespace BG3BuildPlanner.Controllers
                 return NotFound();
             }
 
-            var skill = _skillRepository.GetById(id.Value);
+            var skill = _dbContext.Skills
+                .Include(s => s.Builds)
+                .FirstOrDefault(s => s.Id == id.Value);
             if (skill == null)
             {
                 return NotFound();

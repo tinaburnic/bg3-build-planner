@@ -1,5 +1,4 @@
 using BG3BuildPlanner.Data;
-using BG3BuildPlanner.Data.Mock;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,11 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseInMemoryDatabase("BG3BuildDb"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("ApplicationDbContext")));
 
-builder.Services.AddSingleton<CharacterMockRepository>();
-builder.Services.AddSingleton<BuildMockRepository>();
-builder.Services.AddSingleton<SkillMockRepository>();
 
 var app = builder.Build();
 
@@ -37,6 +33,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",

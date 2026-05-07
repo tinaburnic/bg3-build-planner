@@ -1,7 +1,7 @@
 using BG3BuildPlanner.Data;
-using BG3BuildPlanner.Data.Mock;
 using BG3BuildPlanner.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq;
 
@@ -10,18 +10,18 @@ namespace BG3BuildPlanner.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly BuildMockRepository _buildRepository;
+        private readonly ApplicationDbContext _dbContext;
 
-        public HomeController(ILogger<HomeController> logger, BuildMockRepository buildRepository)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
         {
             _logger = logger;
-            _buildRepository = buildRepository;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
-            var featuredBuilds = _buildRepository
-                .GetAll()
+            var featuredBuilds = _dbContext.Builds
+                .Include(b => b.Ratings)
                 .OrderByDescending(b => b.Ratings.Any() ? b.Ratings.Average(r => r.Score) : 0)
                 .ThenByDescending(b => b.CreatedAt)
                 .Take(3)

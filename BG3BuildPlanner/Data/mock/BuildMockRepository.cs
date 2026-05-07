@@ -8,10 +8,33 @@ namespace BG3BuildPlanner.Data.Mock
     {
         private readonly List<Build> _builds;
         private int _nextId;
+        private readonly Dictionary<int, Character> _charactersById;
+        private readonly User _defaultUser;
+		private sealed record RatingSeed(int Score, string Comment, DateTime CreatedAt);
 
         public BuildMockRepository()
         {
             var timestamp = DateTime.UtcNow;
+            var characterRepository = new CharacterMockRepository();
+
+            _charactersById = characterRepository.GetAll()
+                .ToDictionary(c => c.Id, c => new Character
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    PortraitUrl = c.PortraitUrl,
+                    Race = c.Race,
+                    Background = c.Background,
+                    Level = c.Level,
+                    CreatedAt = c.CreatedAt
+                });
+
+            _defaultUser = new User
+            {
+                Username = "demo",
+                Email = "demo@example.com",
+                PasswordHash = "demo"
+            };
 
             _builds = new List<Build>
             {
@@ -24,18 +47,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp.AddMinutes(-60),
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Sneak Attack", Description = "Rogue burst damage from the shadows.", RequiredLevel = 3 },
-                        new Skill { Name = "Cunning Action", Description = "Dash or disengage to reposition every turn.", RequiredLevel = 4 }
+                        new Skill { Name = "Sneak Attack", Description = "Rogue burst damage from the shadows.", RequiredLevel = 3, ImageUrl = string.Empty },
+                        new Skill { Name = "Cunning Action", Description = "Dash or disengage to reposition every turn.", RequiredLevel = 4, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Blade of First Blood", Type = ItemType.Weapon, Rarity = "Very Rare", Power = 18 },
                         new Item { Name = "Shadeclasp Cloak", Type = ItemType.Accessory, Rarity = "Rare", Power = 12 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 5, Comment = "Deletes priority targets instantly.", CreatedAt = timestamp },
-                        new Rating { Score = 4, Comment = "Needs careful positioning on Tactician.", CreatedAt = timestamp }
+                        new RatingSeed(5, "Deletes priority targets instantly.", timestamp),
+                        new RatingSeed(4, "Needs careful positioning on Tactician.", timestamp)
                     }),
                 CreateBuild(
                     id: 2,
@@ -46,18 +69,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp.AddMinutes(-30),
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Hide", Description = "Slip out of sight to set up advantage.", RequiredLevel = 1 },
-                        new Skill { Name = "Disengage", Description = "Escape melee without provoking attacks.", RequiredLevel = 2 }
+                        new Skill { Name = "Hide", Description = "Slip out of sight to set up advantage.", RequiredLevel = 1, ImageUrl = string.Empty },
+                        new Skill { Name = "Disengage", Description = "Escape melee without provoking attacks.", RequiredLevel = 2, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Venomkiss Dagger", Type = ItemType.Weapon, Rarity = "Rare", Power = 15 },
                         new Item { Name = "Whisperstep Boots", Type = ItemType.Armor, Rarity = "Uncommon", Power = 9 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 4, Comment = "Very consistent opener and clean escapes.", CreatedAt = timestamp },
-                        new Rating { Score = 4, Comment = "Great in cramped maps where stealth matters.", CreatedAt = timestamp }
+                        new RatingSeed(4, "Very consistent opener and clean escapes.", timestamp),
+                        new RatingSeed(4, "Great in cramped maps where stealth matters.", timestamp)
                     }),
                 CreateBuild(
                     id: 3,
@@ -68,18 +91,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp,
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Dash", Description = "Close gaps quickly to keep pressure on casters.", RequiredLevel = 1 },
-                        new Skill { Name = "Sneak Attack", Description = "Capitalize on advantage for heavy burst.", RequiredLevel = 3 }
+                        new Skill { Name = "Dash", Description = "Close gaps quickly to keep pressure on casters.", RequiredLevel = 1, ImageUrl = string.Empty },
+                        new Skill { Name = "Sneak Attack", Description = "Capitalize on advantage for heavy burst.", RequiredLevel = 3, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Duelist's Fang", Type = ItemType.Weapon, Rarity = "Very Rare", Power = 19 },
                         new Item { Name = "Ring of Sudden Silence", Type = ItemType.Accessory, Rarity = "Rare", Power = 11 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 5, Comment = "Punishes isolated targets hard.", CreatedAt = timestamp },
-                        new Rating { Score = 3, Comment = "Positioning mistakes get punished on Tactician.", CreatedAt = timestamp }
+                        new RatingSeed(5, "Punishes isolated targets hard.", timestamp),
+                        new RatingSeed(3, "Positioning mistakes get punished on Tactician.", timestamp)
                     }),
                 CreateBuild(
                     id: 4,
@@ -90,18 +113,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp.AddMinutes(-55),
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Bless", Description = "Buff allies for attack and saves.", RequiredLevel = 2 },
-                        new Skill { Name = "Spirit Guardians", Description = "Radiant aura that shreds clustered foes.", RequiredLevel = 5 }
+                        new Skill { Name = "Bless", Description = "Buff allies for attack and saves.", RequiredLevel = 2, ImageUrl = string.Empty },
+                        new Skill { Name = "Spirit Guardians", Description = "Radiant aura that shreds clustered foes.", RequiredLevel = 5, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Luminous Mace", Type = ItemType.Weapon, Rarity = "Rare", Power = 16 },
                         new Item { Name = "Justiciar's Armor", Type = ItemType.Armor, Rarity = "Very Rare", Power = 20 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 5, Comment = "Unkillable frontline support.", CreatedAt = timestamp },
-                        new Rating { Score = 3, Comment = "Damage ramps slowly before level 5.", CreatedAt = timestamp }
+                        new RatingSeed(5, "Unkillable frontline support.", timestamp),
+                        new RatingSeed(3, "Damage ramps slowly before level 5.", timestamp)
                     }),
                 CreateBuild(
                     id: 5,
@@ -112,18 +135,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp.AddMinutes(-25),
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Sanctuary", Description = "Buy time for allies under pressure.", RequiredLevel = 1 },
-                        new Skill { Name = "Healing Word", Description = "Fast ranged pickup to prevent downs.", RequiredLevel = 1 }
+                        new Skill { Name = "Sanctuary", Description = "Buy time for allies under pressure.", RequiredLevel = 1, ImageUrl = string.Empty },
+                        new Skill { Name = "Healing Word", Description = "Fast ranged pickup to prevent downs.", RequiredLevel = 1, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Chalice of Gentle Light", Type = ItemType.Accessory, Rarity = "Rare", Power = 14 },
                         new Item { Name = "Blessed Vestments", Type = ItemType.Armor, Rarity = "Uncommon", Power = 11 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 4, Comment = "Carries tough fights with clutch saves.", CreatedAt = timestamp },
-                        new Rating { Score = 4, Comment = "Not flashy, but extremely safe.", CreatedAt = timestamp }
+                        new RatingSeed(4, "Carries tough fights with clutch saves.", timestamp),
+                        new RatingSeed(4, "Not flashy, but extremely safe.", timestamp)
                     }),
                 CreateBuild(
                     id: 6,
@@ -134,18 +157,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp,
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Guiding Bolt", Description = "Big radiant hit that sets up advantage.", RequiredLevel = 1 },
-                        new Skill { Name = "Spirit Guardians", Description = "Constant radiant pressure in melee range.", RequiredLevel = 5 }
+                        new Skill { Name = "Guiding Bolt", Description = "Big radiant hit that sets up advantage.", RequiredLevel = 1, ImageUrl = string.Empty },
+                        new Skill { Name = "Spirit Guardians", Description = "Constant radiant pressure in melee range.", RequiredLevel = 5, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Sunflare Symbol", Type = ItemType.Accessory, Rarity = "Very Rare", Power = 18 },
                         new Item { Name = "Dawnward Shield", Type = ItemType.Armor, Rarity = "Rare", Power = 15 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 4, Comment = "High impact once it gets rolling.", CreatedAt = timestamp },
-                        new Rating { Score = 4, Comment = "Demands positioning but rewards it.", CreatedAt = timestamp }
+                        new RatingSeed(4, "High impact once it gets rolling.", timestamp),
+                        new RatingSeed(4, "Demands positioning but rewards it.", timestamp)
                     }),
                 CreateBuild(
                     id: 7,
@@ -156,18 +179,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp.AddMinutes(-50),
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Eldritch Blast", Description = "Signature force beam with invocations.", RequiredLevel = 2 },
-                        new Skill { Name = "Darkness", Description = "Control space and pair with Devil's Sight.", RequiredLevel = 4 }
+                        new Skill { Name = "Eldritch Blast", Description = "Signature force beam with invocations.", RequiredLevel = 2, ImageUrl = string.Empty },
+                        new Skill { Name = "Darkness", Description = "Control space and pair with Devil's Sight.", RequiredLevel = 4, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Infernal Rapier", Type = ItemType.Weapon, Rarity = "Rare", Power = 17 },
                         new Item { Name = "Pactbound Sigil", Type = ItemType.Accessory, Rarity = "Uncommon", Power = 10 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 4, Comment = "Excellent single-target control.", CreatedAt = timestamp },
-                        new Rating { Score = 4, Comment = "Resource hungry without short rests.", CreatedAt = timestamp }
+                        new RatingSeed(4, "Excellent single-target control.", timestamp),
+                        new RatingSeed(4, "Resource hungry without short rests.", timestamp)
                     }),
                 CreateBuild(
                     id: 8,
@@ -178,18 +201,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp.AddMinutes(-20),
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Hex", Description = "Reliable damage boost and debuff pressure.", RequiredLevel = 1 },
-                        new Skill { Name = "Eldritch Blast", Description = "Scales well and fits every turn.", RequiredLevel = 2 }
+                        new Skill { Name = "Hex", Description = "Reliable damage boost and debuff pressure.", RequiredLevel = 1, ImageUrl = string.Empty },
+                        new Skill { Name = "Eldritch Blast", Description = "Scales well and fits every turn.", RequiredLevel = 2, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Gleamshot Focus", Type = ItemType.Accessory, Rarity = "Rare", Power = 15 },
                         new Item { Name = "Ashen Mantle", Type = ItemType.Armor, Rarity = "Uncommon", Power = 12 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 5, Comment = "Simple, strong, and always online.", CreatedAt = timestamp },
-                        new Rating { Score = 3, Comment = "Wants positioning and sight lines.", CreatedAt = timestamp }
+                        new RatingSeed(5, "Simple, strong, and always online.", timestamp),
+                        new RatingSeed(3, "Wants positioning and sight lines.", timestamp)
                     }),
                 CreateBuild(
                     id: 9,
@@ -200,18 +223,18 @@ namespace BG3BuildPlanner.Data.Mock
                     createdAt: timestamp,
                     skills: new List<Skill>
                     {
-                        new Skill { Name = "Armor of Agathys", Description = "Durable temp HP that punishes attackers.", RequiredLevel = 1 },
-                        new Skill { Name = "Darkness", Description = "Create favorable melee trades.", RequiredLevel = 4 }
+                        new Skill { Name = "Armor of Agathys", Description = "Durable temp HP that punishes attackers.", RequiredLevel = 1, ImageUrl = string.Empty },
+                        new Skill { Name = "Darkness", Description = "Create favorable melee trades.", RequiredLevel = 4, ImageUrl = string.Empty }
                     },
                     items: new List<Item>
                     {
                         new Item { Name = "Frontier's Pactblade", Type = ItemType.Weapon, Rarity = "Very Rare", Power = 18 },
                         new Item { Name = "Signet of the Hells", Type = ItemType.Accessory, Rarity = "Rare", Power = 13 }
                     },
-                    ratings: new List<Rating>
+                    ratings: new List<RatingSeed>
                     {
-                        new Rating { Score = 4, Comment = "Feels great in mixed melee/ranged parties.", CreatedAt = timestamp },
-                        new Rating { Score = 4, Comment = "Very flexible turn-to-turn.", CreatedAt = timestamp }
+                        new RatingSeed(4, "Feels great in mixed melee/ranged parties.", timestamp),
+                        new RatingSeed(4, "Very flexible turn-to-turn.", timestamp)
                     })
             };
 
@@ -274,7 +297,7 @@ namespace BG3BuildPlanner.Data.Mock
             return true;
         }
 
-        private static Build CreateBuild(
+        private Build CreateBuild(
             int id,
             int characterId,
             string title,
@@ -283,7 +306,7 @@ namespace BG3BuildPlanner.Data.Mock
             DateTime createdAt,
             List<Skill> skills,
             List<Item> items,
-            List<Rating> ratings)
+            List<RatingSeed> ratings)
         {
             var build = new Build
             {
@@ -293,16 +316,33 @@ namespace BG3BuildPlanner.Data.Mock
                 Description = description,
                 Difficulty = difficulty,
                 CreatedAt = createdAt,
+                User = _defaultUser,
+                Character = _charactersById.TryGetValue(characterId, out var character)
+                    ? character
+                    : new Character
+                    {
+                        Id = characterId,
+                        Name = $"Character {characterId}",
+                        Race = "Unknown",
+                        Background = "Unknown",
+                        Level = 1,
+                        CreatedAt = DateTime.UtcNow
+                    },
                 Skills = skills,
                 Items = items,
-                Ratings = ratings
+                Ratings = new List<Rating>()
             };
 
-            foreach (var rating in build.Ratings)
-            {
-                rating.BuildId = build.Id;
-                rating.Build = build;
-            }
+			foreach (var rating in ratings)
+			{
+				build.Ratings.Add(new Rating
+				{
+					Score = rating.Score,
+					Comment = rating.Comment,
+					CreatedAt = rating.CreatedAt,
+					Build = build
+				});
+			}
 
             return build;
         }

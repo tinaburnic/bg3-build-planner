@@ -1,22 +1,22 @@
 using System.Linq;
-using BG3BuildPlanner.Data.Mock;
+using BG3BuildPlanner.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BG3BuildPlanner.Controllers
 {
     public class CharacterController : Controller
     {
-        private readonly CharacterMockRepository _characterRepository;
+        private readonly ApplicationDbContext _dbContext;
 
-        public CharacterController(CharacterMockRepository characterRepository)
+        public CharacterController(ApplicationDbContext dbContext)
         {
-            _characterRepository = characterRepository;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
-            var characters = _characterRepository
-                .GetAll()
+            var characters = _dbContext.Characters
                 .OrderBy(c => c.Name)
                 .ToList();
 
@@ -30,7 +30,9 @@ namespace BG3BuildPlanner.Controllers
                 return NotFound();
             }
 
-            var character = _characterRepository.GetById(id.Value);
+            var character = _dbContext.Characters
+                .Include(c => c.Builds)
+                .FirstOrDefault(c => c.Id == id.Value);
             if (character == null)
             {
                 return NotFound();
