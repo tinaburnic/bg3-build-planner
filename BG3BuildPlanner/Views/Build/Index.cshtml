@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Builds";
-    var characterNamesById = ViewData["CharacterNamesById"] as Dictionary<int, string> ?? new Dictionary<int, string>();
 }
 
 <section class="build-index-shell reveal-up" aria-label="Build Index">
@@ -20,9 +19,9 @@
     <div class="build-grid">
         @foreach (var build in Model)
         {
-            var characterName = characterNamesById.TryGetValue(build.CharacterId, out var foundName)
-                ? foundName
-                : "Unknown";
+            var characterName = string.IsNullOrWhiteSpace(build.Character?.Name)
+                ? "Unknown"
+                : build.Character.Name;
 
             var shortDescription = string.IsNullOrWhiteSpace(build.Description)
                 ? "No description available."

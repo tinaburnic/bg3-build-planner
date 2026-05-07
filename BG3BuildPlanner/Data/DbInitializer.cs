@@ -17,12 +17,41 @@ namespace BG3BuildPlanner.Data
 				return;
 			}
 
-			var user = new User
+			var users = new List<User>
 			{
-				Username = "demo",
-				Email = "demo@example.com",
-				PasswordHash = "demo"
+				new User
+				{
+					Username = "demo",
+					Email = "demo@example.com",
+					PasswordHash = "demo"
+				},
+				new User
+				{
+					Username = "aria",
+					Email = "aria@baldurs-gate.com",
+					PasswordHash = "aria"
+				},
+				new User
+				{
+					Username = "bren",
+					Email = "bren@baldurs-gate.com",
+					PasswordHash = "bren"
+				},
+				new User
+				{
+					Username = "kestrel",
+					Email = "kestrel@baldurs-gate.com",
+					PasswordHash = "kestrel"
+				},
+				new User
+				{
+					Username = "lyra",
+					Email = "lyra@baldurs-gate.com",
+					PasswordHash = "lyra"
+				}
 			};
+
+			var buildOwners = users.Take(Math.Max(1, users.Count - 1)).ToList();
 
 			var characterRepository = new CharacterMockRepository();
 			var buildRepository = new BuildMockRepository();
@@ -56,8 +85,9 @@ namespace BG3BuildPlanner.Data
 			var itemsByKey = new Dictionary<string, Item>(StringComparer.OrdinalIgnoreCase);
 
 			var builds = buildRepository.GetAll()
-				.Select(b =>
+				.Select((b, index) =>
 				{
+					var owner = buildOwners[index % buildOwners.Count];
 					var build = new Build
 					{
 						Title = b.Title,
@@ -65,7 +95,7 @@ namespace BG3BuildPlanner.Data
 						Difficulty = b.Difficulty,
 						CreatedAt = b.CreatedAt,
 						Character = charactersById[b.CharacterId],
-						User = user,
+						User = owner,
 						Skills = b.Skills.Select(s => GetOrCreateSkill(skillsByName, s)).ToList(),
 						Items = b.Items.Select(i => GetOrCreateItem(itemsByKey, i)).ToList(),
 						Ratings = new List<Rating>()
@@ -86,7 +116,7 @@ namespace BG3BuildPlanner.Data
 				})
 				.ToList();
 
-			context.Users.Add(user);
+			context.Users.AddRange(users);
 			context.Characters.AddRange(characters);
 			context.Skills.AddRange(skillsByName.Values);
 			context.Items.AddRange(itemsByKey.Values);

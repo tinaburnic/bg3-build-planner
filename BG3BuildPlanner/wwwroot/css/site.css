@@ -626,6 +626,141 @@ a:hover {
   box-shadow: inset 0 0 0 1px rgba(216, 179, 106, 0.2), 0 16px 32px rgba(0, 0, 0, 0.35);
 }
 
+
+/* ========================================================================== */
+/* Users Index Page */
+/* ========================================================================== */
+
+.user-index-shell {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.2rem, 2.2vw, 1.9rem);
+  border: 1px solid var(--edge-gold);
+  border-radius: 12px;
+  background:
+    linear-gradient(145deg, rgba(11, 10, 9, 0.95), rgba(22, 17, 13, 0.9) 55%, rgba(10, 9, 8, 0.88)),
+    radial-gradient(circle at 92% 38%, rgba(154, 108, 58, 0.22), transparent 36%);
+  box-shadow: inset 0 0 0 1px rgba(216, 179, 106, 0.18), 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+.user-index-shell::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  pointer-events: none;
+}
+
+.user-index-title {
+  margin: 0.25rem 0 0.55rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.user-index-lead {
+  color: #ded3b8;
+  max-width: 70ch;
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+}
+
+.user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.95rem;
+}
+
+.user-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(216, 179, 106, 0.45);
+  background: linear-gradient(160deg, rgba(20, 16, 12, 0.92), rgba(14, 12, 10, 0.9));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.user-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 12% 12%, rgba(216, 179, 106, 0.13), transparent 45%);
+  pointer-events: none;
+}
+
+.user-card-header {
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(216, 179, 106, 0.3);
+  padding-bottom: 0.6rem;
+}
+
+.user-name {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #f2ddb0;
+  font-weight: 700;
+}
+
+.user-card-body {
+  font-size: 1rem;
+  color: #f0e8d2;
+}
+
+.user-detail {
+  margin-bottom: 0.52rem;
+  color: #efe7d0;
+}
+
+.user-detail--builds {
+  margin-top: 0.2rem;
+}
+
+.user-detail--builds .detail-label {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.user-builds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.user-build-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  background: rgba(35, 28, 22, 0.75);
+  color: #f1e0bc;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.user-build-badge:hover,
+.user-build-badge:focus-visible {
+  color: var(--accent-gold-bright);
+  border-color: var(--accent-gold-bright);
+  transform: translateY(-1px);
+}
+
+.user-build-empty {
+  color: #cbbfa3;
+  font-style: italic;
+  background: rgba(10, 9, 8, 0.55);
+  border: 1px dashed rgba(216, 179, 106, 0.35);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+@media (max-width: 575.98px) {
+  .user-index-shell::before {
+    inset: 8px;
+  }
+}
 .character-detail-shell::before {
   content: "";
   position: absolute;

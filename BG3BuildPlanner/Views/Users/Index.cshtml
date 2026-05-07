@@ -1,0 +1,55 @@
+@using System.Linq
+@model IEnumerable<BG3BuildPlanner.Data.User>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<section class="user-index-shell reveal-up" aria-label="User Index">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+    <p class="section-label">Adventurer Registry</p>
+    <h1 class="user-index-title">Oathbound Dossiers</h1>
+    <p class="user-index-lead">
+        Each oathbound chronicler leaves a trail of builds behind them. Track their craft, review their choices,
+        and dive into the tactical legacy they have forged.
+    </p>
+
+    <div class="user-grid">
+        @foreach (var user in Model)
+        {
+            var buildCount = user.Builds?.Count ?? 0;
+
+            <article class="user-card" aria-label="@user.Username profile">
+                <header class="user-card-header">
+                    <h2 class="user-name">@user.Username</h2>
+                </header>
+                <div class="user-card-body">
+                    <div class="user-detail"><span class="detail-label">Email</span> @user.Email</div>
+                    <div class="user-detail"><span class="detail-label">Builds</span> @buildCount build@(buildCount == 1 ? string.Empty : "s")</div>
+                    <div class="user-detail user-detail--builds">
+                        <span class="detail-label">Build List</span>
+                        @if (buildCount == 0)
+                        {
+                            <div class="user-build-empty">No builds recorded yet. The campfire still waits.</div>
+                        }
+                        else
+                        {
+                            <div class="user-builds">
+                                @foreach (var build in user.Builds.OrderBy(b => b.Title))
+                                {
+                                    <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id" class="user-build-badge">
+                                        @build.Title
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</section>
