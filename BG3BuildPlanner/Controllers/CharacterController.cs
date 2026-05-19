@@ -27,6 +27,58 @@ namespace BG3BuildPlanner.Controllers
             return View(characters);
         }
 
+        [HttpGet]
+        public IActionResult Search(string? term)
+        {
+            var query = _dbContext.Characters
+                .Where(c => c.DeletedAt == null);
+
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                var pattern = $"%{term.Trim()}%";
+                query = query.Where(c => EF.Functions.Like(c.Name, pattern));
+            }
+
+            var results = query
+                .OrderBy(c => c.Name)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    c.Race,
+                    c.Background,
+                    c.Level
+                })
+                .ToList();
+
+            return Json(results);
+        }
+
+        [HttpGet]
+        public IActionResult Autocomplete(string? term)
+        {
+            var query = _dbContext.Characters
+                .Where(c => c.DeletedAt == null);
+
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                var pattern = $"%{term.Trim()}%";
+                query = query.Where(c => EF.Functions.Like(c.Name, pattern));
+            }
+
+            var results = query
+                .OrderBy(c => c.Name)
+                .Select(c => new
+                {
+                    Id = c.Id,
+                    Text = c.Name
+                })
+                .Take(10)
+                .ToList();
+
+            return Json(results);
+        }
+
         public IActionResult Details(int? id)
         {
             if (id == null)

@@ -1,0 +1,20 @@
+@model BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+
+<div class="autocomplete-shell"
+    data-autocomplete-shell
+    data-endpoint="@Model.EndpointUrl"
+    data-min-length="@Model.MinLength"
+    data-input-id="@Model.InputId"
+    data-hidden-id="@Model.HiddenInputId">
+    <label for="@Model.InputId" class="form-label">@Model.Label</label>
+    <div class="autocomplete-field">
+        <input id="@Model.InputId"
+               name="@Model.InputName"
+               class="autocomplete-input"
+               type="text"
+               placeholder="@Model.Placeholder"
+               autocomplete="off" />
+        <input id="@Model.HiddenInputId" name="@Model.HiddenInputName" type="hidden" />
+        <div class="autocomplete-list" data-autocomplete-list hidden></div>
+    </div>
+</div>

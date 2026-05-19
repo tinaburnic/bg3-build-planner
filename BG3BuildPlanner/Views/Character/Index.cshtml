@@ -4,7 +4,15 @@
     ViewData["Title"] = "Characters";
 }
 
-<section class="character-index-shell reveal-up" aria-label="Character Index">
+<section class="character-index-shell reveal-up"
+         aria-label="Character Index"
+         data-live-search
+         data-live-search-input="#character-search-input"
+         data-live-search-results="[data-character-grid]"
+         data-live-search-empty="[data-character-empty]"
+         data-live-search-url="@Url.Action("Search", "Character")"
+         data-live-search-renderer="renderCharacterCard"
+         data-live-search-debounce="250">
     <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
@@ -20,7 +28,22 @@
         <a asp-action="Create" class="btn-gold">Create New Character</a>
     </div>
 
-    <div class="character-grid">
+    <div class="character-search" aria-label="Search characters">
+        @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+        {
+            InputId = "character-search-input",
+            InputName = "CharacterSearch",
+            HiddenInputId = "character-search-id",
+            HiddenInputName = "CharacterId",
+            Label = "Search by name",
+            Placeholder = "Type a character name",
+            EndpointUrl = Url.Action("Autocomplete", "Character") ?? string.Empty,
+            MinLength = 2
+        })
+        <span class="character-search-hint">Live search updates the roster as you type.</span>
+    </div>
+
+    <div class="character-grid" data-character-grid>
         @foreach (var character in Model)
         {
             <a asp-action="Details" asp-route-id="@character.Id" class="character-card-link" aria-label="View details for @character.Name">
@@ -37,5 +60,7 @@
             </a>
         }
     </div>
+
+    <p class="character-empty" data-character-empty hidden>No characters match this search.</p>
 </section>
 
