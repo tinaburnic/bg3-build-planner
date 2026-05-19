@@ -45,7 +45,7 @@
 
             <div class="character-detail-actions">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Character</a>
-                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="character-delete-form">
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="character-delete-form" data-delete-form>
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this character?');">Delete Character</button>
                 </form>

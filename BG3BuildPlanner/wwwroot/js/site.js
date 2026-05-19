@@ -2,6 +2,7 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+document.documentElement.classList.add("js");
 const renderCharacterCard = (character) => {
 	const link = document.createElement("a");
 	link.className = "character-card-link";
@@ -10,6 +11,7 @@ const renderCharacterCard = (character) => {
 
 	const card = document.createElement("article");
 	card.className = "character-card";
+	card.setAttribute("data-reveal-item", "");
 
 	const header = document.createElement("header");
 	header.className = "character-card-header";
@@ -46,6 +48,26 @@ const renderCharacterCard = (character) => {
 
 window.renderCharacterCard = renderCharacterCard;
 
+const applyStaggerReveal = (container) => {
+	if (!container) {
+		return;
+	}
+
+	const items = Array.from(container.querySelectorAll("[data-reveal-item]"));
+	items.forEach((item, index) => {
+		if (item.dataset.revealed === "true") {
+			return;
+		}
+
+		item.classList.add("reveal-item");
+		item.style.animationDelay = `${index * 70}ms`;
+		item.dataset.revealed = "true";
+		requestAnimationFrame(() => {
+			item.classList.add("is-revealed");
+		});
+	});
+};
+
 const initLiveSearch = (root) => {
 	const inputSelector = root.dataset.liveSearchInput;
 	const resultsSelector = root.dataset.liveSearchResults;
@@ -74,6 +96,7 @@ const initLiveSearch = (root) => {
 		items.forEach((item) => {
 			results.append(renderer(item));
 		});
+		applyStaggerReveal(results);
 
 		if (emptyState) {
 			emptyState.hidden = items.length !== 0;
@@ -112,6 +135,26 @@ const initLiveSearch = (root) => {
 document.addEventListener("DOMContentLoaded", () => {
 	document.querySelectorAll("[data-live-search]").forEach((root) => {
 		initLiveSearch(root);
+	});
+
+	document.querySelectorAll("[data-reveal-container]").forEach((container) => {
+		applyStaggerReveal(container);
+	});
+
+	document.querySelectorAll("[data-delete-form]").forEach((form) => {
+		form.addEventListener("submit", (event) => {
+			const selector = form.getAttribute("data-delete-target");
+			const target = selector ? document.querySelector(selector) : form.closest("[data-remove-target]");
+			if (!target || target.classList.contains("is-removing")) {
+				return;
+			}
+
+			event.preventDefault();
+			target.classList.add("is-removing", "fade-remove-target");
+			window.setTimeout(() => {
+				form.submit();
+			}, 200);
+		});
 	});
 });
 

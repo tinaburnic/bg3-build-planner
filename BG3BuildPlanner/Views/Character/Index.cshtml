@@ -43,11 +43,11 @@
         <span class="character-search-hint">Live search updates the roster as you type.</span>
     </div>
 
-    <div class="character-grid" data-character-grid>
+    <div class="character-grid" data-character-grid data-reveal-container>
         @foreach (var character in Model)
         {
             <a asp-action="Details" asp-route-id="@character.Id" class="character-card-link" aria-label="View details for @character.Name">
-                <article class="character-card">
+                <article class="character-card" data-reveal-item>
                     <header class="character-card-header">
                         <h2 class="character-name">@character.Name</h2>
                     </header>

@@ -725,6 +725,31 @@ a:hover {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
+.character-card:hover {
+  border-color: rgba(241, 209, 138, 0.7);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
+}
+
+.js .reveal-item {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.js .reveal-item.is-revealed {
+  animation: reveal-item 600ms ease forwards;
+}
+
+@keyframes reveal-item {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .character-card::before {
   content: "";
   position: absolute;
@@ -790,6 +815,12 @@ a:hover {
     linear-gradient(150deg, rgba(12, 11, 9, 0.95), rgba(19, 15, 12, 0.9) 56%, rgba(6, 9, 13, 0.86)),
     radial-gradient(circle at 90% 45%, rgba(52, 150, 164, 0.22), transparent 36%);
   box-shadow: inset 0 0 0 1px rgba(216, 179, 106, 0.2), 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+.fade-remove-target.is-removing {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 
