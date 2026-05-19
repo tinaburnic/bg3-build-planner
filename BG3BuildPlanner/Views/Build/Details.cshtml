@@ -17,7 +17,7 @@
     };
 }
 
-<section class="build-detail-shell reveal-up" aria-label="Build Details">
+<section class="build-detail-shell reveal-up fade-remove-target" aria-label="Build Details" data-remove-target>
     <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
@@ -69,7 +69,14 @@
                     <dd>@Model.CreatedAt.ToString("MMMM dd, yyyy")</dd>
                 </div>
             </dl>
-            <a asp-action="Index" class="btn btn-outline-gold build-detail-back">Back to Build List</a>
+            <div class="build-detail-actions">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Build</a>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="build-detail-delete" data-delete-form data-delete-target=".build-detail-shell">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this build?');">Delete Build</button>
+                </form>
+                <a asp-action="Index" class="btn-outline-gold">Back to Build List</a>
+            </div>
         </article>
     </div>
 

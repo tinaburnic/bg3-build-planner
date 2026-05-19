@@ -46,5 +46,29 @@ namespace BG3BuildPlanner.Controllers
 
             return View(user);
         }
+
+        [HttpGet("autocomplete")]
+        public IActionResult Autocomplete(string? term)
+        {
+            var query = _dbContext.Users.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                var pattern = $"%{term.Trim()}%";
+                query = query.Where(u => EF.Functions.Like(u.Username, pattern));
+            }
+
+            var results = query
+                .OrderBy(u => u.Username)
+                .Select(u => new
+                {
+                    Id = u.Id,
+                    Text = u.Username
+                })
+                .Take(10)
+                .ToList();
+
+            return Json(results);
+        }
     }
 }

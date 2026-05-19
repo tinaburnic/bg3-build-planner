@@ -1,0 +1,83 @@
+@model BG3BuildPlanner.Models.Build.BuildCreateModel
+@using BG3BuildPlanner.Data
+
+@{
+    ViewData["Title"] = "Create Build";
+}
+
+<section class="character-create-shell reveal-up" aria-label="Create Build">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+    <div class="character-create-header">
+        <p class="section-label">New Build</p>
+        <h1 class="character-create-title">Create Build</h1>
+    </div>
+
+    <form asp-action="Create" method="post" class="character-create-form">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <div class="form-group">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Difficulty" class="form-label"></label>
+            <select asp-for="Difficulty" class="form-control" asp-items="Html.GetEnumSelectList<Difficulty>()"></select>
+            <span asp-validation-for="Difficulty" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+            {
+                InputId = "build-character",
+                InputName = "BuildCharacterName",
+                HiddenInputId = "build-character-id",
+                HiddenInputName = "CharacterId",
+                Label = "Character",
+                Placeholder = "Start typing a character name",
+                EndpointUrl = Url.Action("Autocomplete", "Character") ?? string.Empty,
+                MinLength = 2,
+                Required = true,
+                RequiredMessage = "Select a character."
+            })
+            <span asp-validation-for="CharacterId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+            {
+                InputId = "build-user",
+                InputName = "BuildUserName",
+                HiddenInputId = "build-user-id",
+                HiddenInputName = "UserId",
+                Label = "Creator",
+                Placeholder = "Start typing a username",
+                EndpointUrl = Url.Action("Autocomplete", "Users") ?? string.Empty,
+                MinLength = 2,
+                Required = true,
+                RequiredMessage = "Select a creator."
+            })
+            <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-gold">Create</button>
+            <a asp-action="Index" class="btn-outline-gold">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

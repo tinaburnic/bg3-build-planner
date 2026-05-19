@@ -5,7 +5,9 @@
     data-endpoint="@Model.EndpointUrl"
     data-min-length="@Model.MinLength"
     data-input-id="@Model.InputId"
-    data-hidden-id="@Model.HiddenInputId">
+    data-hidden-id="@Model.HiddenInputId"
+    data-required="@Model.Required.ToString().ToLowerInvariant()"
+    data-required-message="@Model.RequiredMessage">
     <label for="@Model.InputId" class="form-label">@Model.Label</label>
     <div class="autocomplete-field">
         <input id="@Model.InputId"
@@ -13,8 +15,14 @@
                class="autocomplete-input"
                type="text"
                placeholder="@Model.Placeholder"
-               autocomplete="off" />
-        <input id="@Model.HiddenInputId" name="@Model.HiddenInputName" type="hidden" />
+             value="@Model.InitialText"
+             autocomplete="off"
+             @if (Model.Required) { <text>aria-required="true"</text> } />
+         <input id="@Model.HiddenInputId"
+             name="@Model.HiddenInputName"
+             type="hidden"
+             value="@(Model.InitialId?.ToString() ?? string.Empty)" />
         <div class="autocomplete-list" data-autocomplete-list hidden></div>
+         <span class="text-danger autocomplete-validation" data-autocomplete-validation></span>
     </div>
 </div>

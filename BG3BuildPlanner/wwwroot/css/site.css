@@ -592,6 +592,40 @@ a:hover {
   box-shadow: 0 0 0 1px rgba(241, 209, 138, 0.35);
 }
 
+.autocomplete-validation {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+.datetime-picker-shell {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 420px;
+}
+
+.datetime-picker-field {
+  position: relative;
+}
+
+.datetime-picker-input {
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.05em;
+}
+
+.datetime-picker-validation {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+.required {
+  color: #dc7661;
+  margin-left: 0.25rem;
+}
+
 .character-autocomplete {
   position: absolute;
   top: calc(100% + 0.3rem);
@@ -644,6 +678,31 @@ a:hover {
 .character-search-hint {
   color: var(--ink-muted);
   font-size: 0.9rem;
+}
+
+.build-index-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.build-search {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 420px;
+  margin-bottom: 1.6rem;
+}
+
+.build-search-hint {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.build-empty {
+  margin-top: 1.2rem;
+  color: var(--ink-muted);
+  font-style: italic;
 }
 
 .character-empty {
@@ -1077,6 +1136,17 @@ a:hover {
   flex-wrap: wrap;
   gap: 0.75rem;
   margin: 0.95rem 1rem 1rem;
+}
+
+.build-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.95rem 1rem 1rem;
+}
+
+.build-detail-delete {
+  margin: 0;
 }
 
 .character-delete-form {

@@ -8,6 +8,11 @@ namespace BG3BuildPlanner.Data.Queries;
 public static class BuildQueryExtensions
 {
 	/// <summary>
+	/// Filters builds that are not soft-deleted.
+	/// </summary>
+	public static IQueryable<Build> Active(this IQueryable<Build> builds)
+		=> builds.Where(b => b.DeletedAt == null);
+	/// <summary>
 	/// Filters builds belonging to a specific character.
 	/// </summary>
 	public static IQueryable<Build> ForCharacter(this IQueryable<Build> builds, int characterId)

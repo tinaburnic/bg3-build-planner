@@ -4,7 +4,15 @@
     ViewData["Title"] = "Builds";
 }
 
-<section class="build-index-shell reveal-up" aria-label="Build Index">
+<section class="build-index-shell reveal-up"
+         aria-label="Build Index"
+         data-live-search
+         data-live-search-input="#build-search-input"
+         data-live-search-results="[data-build-grid]"
+         data-live-search-empty="[data-build-empty]"
+         data-live-search-url="@Url.Action("Search", "Build")"
+         data-live-search-renderer="renderBuildCard"
+         data-live-search-debounce="250">
     <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
@@ -16,7 +24,26 @@
         Explore a collection of builds for various playstyles and difficulties. Each build is a template for your own adventures.
     </p>
 
-    <div class="build-grid">
+    <div class="build-index-actions">
+        <a asp-action="Create" class="btn-gold">Create New Build</a>
+    </div>
+
+    <div class="build-search" aria-label="Search builds">
+        @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+        {
+            InputId = "build-search-input",
+            InputName = "BuildSearch",
+            HiddenInputId = "build-search-id",
+            HiddenInputName = "BuildId",
+            Label = "Search by title",
+            Placeholder = "Type a build title",
+            EndpointUrl = Url.Action("Autocomplete", "Build") ?? string.Empty,
+            MinLength = 2
+        })
+        <span class="build-search-hint">Live search updates the build library as you type.</span>
+    </div>
+
+    <div class="build-grid" data-build-grid data-reveal-container>
         @foreach (var build in Model)
         {
             var characterName = string.IsNullOrWhiteSpace(build.Character?.Name)
@@ -28,7 +55,7 @@
                 : (build.Description.Length > 110 ? build.Description.Substring(0, 107) + "..." : build.Description);
 
             <a asp-action="Details" asp-route-id="@build.Id" class="build-index-card-link" aria-label="View details for @build.Title">
-                <article class="build-index-card">
+                <article class="build-index-card" data-reveal-item>
                     <header class="build-index-card-header">
                         <h2 class="build-index-name">@build.Title</h2>
                     </header>
@@ -41,5 +68,7 @@
             </a>
         }
     </div>
+
+    <p class="build-empty" data-build-empty hidden>No builds match this search.</p>
 </section>
 

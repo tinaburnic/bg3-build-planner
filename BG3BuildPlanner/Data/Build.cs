@@ -13,6 +13,7 @@ namespace BG3BuildPlanner.Data
 		public required string Description { get; set; }
 		public Difficulty Difficulty { get; set; }
 		public DateTime CreatedAt { get; set; }
+		public DateTime? DeletedAt { get; set; }
 
 		[ForeignKey(nameof(User))]
 		public int UserId { get; set; }

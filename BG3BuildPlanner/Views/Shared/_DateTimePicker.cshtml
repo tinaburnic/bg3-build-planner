@@ -1,0 +1,59 @@
+@model BG3BuildPlanner.Models.Shared.DateTimePickerModel
+@using System.Globalization
+
+@{
+    var displayInputId = string.IsNullOrEmpty(Model.InputId) ? $"datetime-{Model.InputName}" : Model.InputId;
+    var hiddenInputId = $"{displayInputId}-value";
+    var displayValue = string.Empty;
+    if (Model.Value.HasValue)
+    {
+        displayValue = Model.Format == BG3BuildPlanner.Models.Shared.DateTimePickerFormat.En
+            ? Model.Value.Value.ToString("MM/dd/yyyy HH:mm")
+            : Model.Value.Value.ToString("dd.MM.yyyy HH:mm");
+    }
+    var hiddenValue = Model.Value?.ToString("O") ?? string.Empty;
+    var cultureCode = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var formatToken = Model.Format == BG3BuildPlanner.Models.Shared.DateTimePickerFormat.En
+        ? "en"
+        : Model.Format == BG3BuildPlanner.Models.Shared.DateTimePickerFormat.Hr
+            ? "hr"
+            : cultureCode == "hr" ? "hr" : "en";
+}
+
+<div class="datetime-picker-shell"
+    data-datetime-picker
+    data-format="@formatToken"
+    data-required="@Model.Required.ToString().ToLowerInvariant()">
+    
+    <label for="@displayInputId" class="form-label">
+        @Model.Label
+        @if (Model.Required)
+        {
+            <span class="required" aria-label="required">*</span>
+        }
+    </label>
+    
+    <div class="datetime-picker-field">
+        <input id="@displayInputId"
+               type="text"
+               class="form-control datetime-picker-input"
+               placeholder="@Model.Placeholder"
+               value="@displayValue"
+               data-display-input
+               autocomplete="off"
+               aria-describedby="@hiddenInputId-validation"
+               @if (Model.Required) { <text>aria-required="true"</text> } />
+
+        <input id="@hiddenInputId"
+               name="@Model.InputName"
+               type="hidden"
+               value="@hiddenValue"
+               data-hidden-input />
+
+        <span id="@hiddenInputId-validation"
+              class="text-danger datetime-picker-validation"
+              data-validation-message
+              data-valmsg-for="@Model.InputName"
+              data-valmsg-replace="true"></span>
+    </div>
+</div>

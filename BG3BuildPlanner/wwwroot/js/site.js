@@ -48,6 +48,54 @@ const renderCharacterCard = (character) => {
 
 window.renderCharacterCard = renderCharacterCard;
 
+const renderBuildCard = (build) => {
+	const link = document.createElement("a");
+	link.className = "build-index-card-link";
+	link.href = `/builds/${build.id}`;
+	link.setAttribute("aria-label", `View details for ${build.title}`);
+
+	const card = document.createElement("article");
+	card.className = "build-index-card";
+	card.setAttribute("data-reveal-item", "");
+
+	const header = document.createElement("header");
+	header.className = "build-index-card-header";
+
+	const name = document.createElement("h2");
+	name.className = "build-index-name";
+	name.textContent = build.title;
+
+	const body = document.createElement("div");
+	body.className = "build-index-card-body";
+
+	const difficulty = document.createElement("div");
+	difficulty.className = "build-index-detail";
+	difficulty.innerHTML = '<span class="detail-label">Difficulty</span> ';
+	difficulty.append(document.createTextNode(build.difficulty));
+
+	const character = document.createElement("div");
+	character.className = "build-index-detail";
+	character.innerHTML = '<span class="detail-label">Character</span> ';
+	character.append(document.createTextNode(build.characterName || "Unknown"));
+
+	const description = document.createElement("p");
+	description.className = "build-index-description";
+	const fullDescription = build.description || "";
+	const trimmed = fullDescription.length > 110
+		? `${fullDescription.substring(0, 107)}...`
+		: fullDescription || "No description available.";
+	description.textContent = trimmed;
+
+	header.append(name);
+	body.append(difficulty, character, description);
+	card.append(header, body);
+	link.append(card);
+
+	return link;
+};
+
+window.renderBuildCard = renderBuildCard;
+
 const applyStaggerReveal = (container) => {
 	if (!container) {
 		return;
@@ -65,6 +113,154 @@ const applyStaggerReveal = (container) => {
 		requestAnimationFrame(() => {
 			item.classList.add("is-revealed");
 		});
+	});
+};
+
+const dateTimeFormats = {
+	en: {
+		pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})$/,
+		parts: ["month", "day", "year", "hour", "minute"],
+		message: "Please enter date and time in MM/dd/yyyy HH:mm format"
+	},
+	hr: {
+		pattern: /^(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{2})$/,
+		parts: ["day", "month", "year", "hour", "minute"],
+		message: "Please enter date and time in dd.MM.yyyy HH:mm format"
+	}
+};
+
+const parseDateTime = (value, format) => {
+	const config = dateTimeFormats[format] || dateTimeFormats.en;
+	const match = value.match(config.pattern);
+	if (!match) {
+		return null;
+	}
+
+	const parts = {};
+	config.parts.forEach((part, index) => {
+		parts[part] = parseInt(match[index + 1], 10);
+	});
+
+	if (parts.month < 1 || parts.month > 12) {
+		return null;
+	}
+	if (parts.day < 1 || parts.day > 31) {
+		return null;
+	}
+	if (parts.hour < 0 || parts.hour > 23) {
+		return null;
+	}
+	if (parts.minute < 0 || parts.minute > 59) {
+		return null;
+	}
+
+	const date = new Date(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+	if (date.getFullYear() !== parts.year ||
+		date.getMonth() !== parts.month - 1 ||
+		date.getDate() !== parts.day) {
+		return null;
+	}
+
+	return date;
+};
+
+const formatDateTime = (date, format) => {
+	const pad = (value) => String(value).padStart(2, "0");
+	const month = pad(date.getMonth() + 1);
+	const day = pad(date.getDate());
+	const year = date.getFullYear();
+	const hour = pad(date.getHours());
+	const minute = pad(date.getMinutes());
+
+	if (format === "en") {
+		return `${month}/${day}/${year} ${hour}:${minute}`;
+	}
+
+	return `${day}.${month}.${year} ${hour}:${minute}`;
+};
+
+const setDateTimeValidation = (input, messageEl, message) => {
+	input.classList.toggle("input-validation-error", Boolean(message));
+	if (!messageEl) {
+		return;
+	}
+	messageEl.textContent = message || "";
+};
+
+const initDateTimePickers = () => {
+	document.querySelectorAll("[data-datetime-picker]").forEach((shell) => {
+		if (shell.dataset.initialized === "true") {
+			return;
+		}
+
+		const displayInput = shell.querySelector("[data-display-input]");
+		const hiddenInput = shell.querySelector("[data-hidden-input]");
+		const messageEl = shell.querySelector("[data-validation-message]");
+		const format = shell.dataset.format || "en";
+		const required = shell.dataset.required === "true";
+
+		if (!displayInput || !hiddenInput) {
+			return;
+		}
+
+		const validateAndSync = () => {
+			const value = displayInput.value.trim();
+			if (value === "") {
+				hiddenInput.value = "";
+				if (required) {
+					setDateTimeValidation(displayInput, messageEl, "This field is required");
+					return false;
+				}
+				setDateTimeValidation(displayInput, messageEl, "");
+				return true;
+			}
+
+			const parsed = parseDateTime(value, format);
+			if (!parsed) {
+				const config = dateTimeFormats[format] || dateTimeFormats.en;
+				hiddenInput.value = "";
+				setDateTimeValidation(displayInput, messageEl, config.message);
+				return false;
+			}
+
+			hiddenInput.value = parsed.toISOString();
+			displayInput.value = formatDateTime(parsed, format);
+			setDateTimeValidation(displayInput, messageEl, "");
+			return true;
+		};
+
+		displayInput.addEventListener("input", () => {
+			const value = displayInput.value.trim();
+			if (value === "") {
+				hiddenInput.value = "";
+				setDateTimeValidation(displayInput, messageEl, "");
+				return;
+			}
+
+			const parsed = parseDateTime(value, format);
+			if (parsed) {
+				hiddenInput.value = parsed.toISOString();
+				setDateTimeValidation(displayInput, messageEl, "");
+			} else {
+				hiddenInput.value = "";
+			}
+		});
+
+		displayInput.addEventListener("blur", () => {
+			validateAndSync();
+		});
+
+		const form = displayInput.closest("form");
+		if (form) {
+			form.addEventListener("submit", (event) => {
+				if (!validateAndSync()) {
+					event.preventDefault();
+					displayInput.focus();
+				}
+			});
+		}
+
+		shell.dataset.initialized = "true";
 	});
 };
 
@@ -137,6 +333,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		initLiveSearch(root);
 	});
 
+	initDateTimePickers();
+
 	document.querySelectorAll("[data-reveal-container]").forEach((container) => {
 		applyStaggerReveal(container);
 	});
@@ -166,9 +364,12 @@ if (window.jQuery) {
 			var hiddenId = $shell.data("hidden-id");
 			var endpoint = $shell.data("endpoint");
 			var minLength = parseInt($shell.data("min-length"), 10) || 2;
+			var required = String($shell.data("required")).toLowerCase() === "true";
+			var requiredMessage = $shell.data("required-message") || "Please select a value.";
 			var $input = inputId ? $("#" + inputId) : $shell.find(".autocomplete-input");
 			var $hidden = hiddenId ? $("#" + hiddenId) : $shell.find("input[type='hidden']");
 			var $list = $shell.find("[data-autocomplete-list]");
+			var $validation = $shell.find("[data-autocomplete-validation]");
 			var debounceTimer = null;
 			var items = [];
 			var activeIndex = -1;
@@ -196,6 +397,9 @@ if (window.jQuery) {
 				$input.val(item.text || "");
 				if ($hidden.length) {
 					$hidden.val(item.id || "");
+				}
+				if ($validation.length) {
+					$validation.text("");
 				}
 				$input.trigger("input");
 				closeList();
@@ -252,6 +456,9 @@ if (window.jQuery) {
 				if (debounceTimer) {
 					window.clearTimeout(debounceTimer);
 				}
+				if ($validation.length) {
+					$validation.text("");
+				}
 				debounceTimer = window.setTimeout(fetchResults, 200);
 			});
 
@@ -287,6 +494,20 @@ if (window.jQuery) {
 			$input.on("blur", function () {
 				window.setTimeout(closeList, 150);
 			});
+
+			var form = $input.closest("form");
+			if (form.length && required) {
+				form.on("submit", function (event) {
+					if ($hidden.val()) {
+						return;
+					}
+					if ($validation.length) {
+						$validation.text(requiredMessage);
+					}
+					event.preventDefault();
+					$input.trigger("focus");
+				});
+			}
 
 			$(document).on("click", function (event) {
 				if ($(event.target).closest($shell).length === 0) {
