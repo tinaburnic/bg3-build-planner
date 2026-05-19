@@ -20,6 +20,7 @@ namespace BG3BuildPlanner.Controllers
         public IActionResult Index()
         {
             var characters = _dbContext.Characters
+                .Where(c => c.DeletedAt == null)
                 .OrderBy(c => c.Name)
                 .ToList();
 
@@ -35,7 +36,7 @@ namespace BG3BuildPlanner.Controllers
 
             var character = _dbContext.Characters
                 .Include(c => c.Builds)
-                .FirstOrDefault(c => c.Id == id.Value);
+                .FirstOrDefault(c => c.Id == id.Value && c.DeletedAt == null);
             if (character == null)
             {
                 return NotFound();
@@ -84,7 +85,7 @@ namespace BG3BuildPlanner.Controllers
             }
 
             var character = _dbContext.Characters
-                .FirstOrDefault(c => c.Id == id.Value);
+                .FirstOrDefault(c => c.Id == id.Value && c.DeletedAt == null);
             if (character == null)
             {
                 return NotFound();
@@ -108,7 +109,7 @@ namespace BG3BuildPlanner.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var character = await _dbContext.Characters
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
             if (character == null)
             {
                 return NotFound();
@@ -136,6 +137,23 @@ namespace BG3BuildPlanner.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var character = await _dbContext.Characters
+                .FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
+            if (character == null)
+            {
+                return NotFound();
+            }
+
+            character.DeletedAt = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

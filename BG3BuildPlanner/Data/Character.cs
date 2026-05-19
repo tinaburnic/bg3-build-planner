@@ -14,6 +14,7 @@ namespace BG3BuildPlanner.Data
         public required string Background { get; set; }
         public int Level { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         // Navigation property
         public virtual ICollection<Build> Builds { get; set; } = new List<Build>();

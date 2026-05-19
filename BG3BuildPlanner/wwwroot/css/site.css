@@ -889,6 +889,10 @@ a:hover {
   margin: 0.95rem 1rem 1rem;
 }
 
+.character-delete-form {
+  margin: 0;
+}
+
 @media (max-width: 991.98px) {
   .character-detail-layout {
     grid-template-columns: 1fr;
