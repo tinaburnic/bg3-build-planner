@@ -16,6 +16,7 @@
     </div>
 
     <form asp-action="Create" method="post" class="character-create-form">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
         <div class="form-group">
             <label asp-for="Name" class="form-label"></label>
             <input asp-for="Name" class="form-control" />
