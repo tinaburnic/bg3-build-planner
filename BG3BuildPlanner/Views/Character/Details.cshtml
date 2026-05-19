@@ -43,7 +43,10 @@
                 </div>
             </dl>
 
-            <a asp-action="Index" class="btn btn-outline-gold character-detail-back">Back to Character List</a>
+            <div class="character-detail-actions">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Character</a>
+                <a asp-action="Index" class="btn-outline-gold">Back to Character List</a>
+            </div>
         </article>
     </div>
 </section>

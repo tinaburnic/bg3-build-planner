@@ -24,11 +24,11 @@
             var buildCount = user.Builds?.Count ?? 0;
 
             <article class="user-card" aria-label="@user.Username profile">
+                <a class="user-card-link" asp-action="Details" asp-route-id="@user.Id" aria-label="View @user.Username profile"></a>
                 <header class="user-card-header">
                     <h2 class="user-name">@user.Username</h2>
                 </header>
                 <div class="user-card-body">
-                    <div class="user-detail"><span class="detail-label">Email</span> @user.Email</div>
                     <div class="user-detail"><span class="detail-label">Builds</span> @buildCount build@(buildCount == 1 ? string.Empty : "s")</div>
                     <div class="user-detail user-detail--builds">
                         <span class="detail-label">Build List</span>

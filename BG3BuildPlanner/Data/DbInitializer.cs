@@ -88,6 +88,8 @@ namespace BG3BuildPlanner.Data
 				.Select((b, index) =>
 				{
 					var owner = buildOwners[index % buildOwners.Count];
+					var eligibleRaters = users.Where(u => u != owner).ToList();
+					var ratingIndex = 0;
 					var build = new Build
 					{
 						Title = b.Title,
@@ -103,12 +105,20 @@ namespace BG3BuildPlanner.Data
 
 					foreach (var rating in b.Ratings)
 					{
+						if (eligibleRaters.Count == 0)
+						{
+							break;
+						}
+
+						var rater = eligibleRaters[ratingIndex % eligibleRaters.Count];
+						ratingIndex++;
 						build.Ratings.Add(new Rating
 						{
 							Score = rating.Score,
 							Comment = rating.Comment,
 							CreatedAt = rating.CreatedAt,
-							Build = build
+							Build = build,
+							User = rater
 						});
 					}
 

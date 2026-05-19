@@ -1,0 +1,59 @@
+@model BG3BuildPlanner.Models.Character.CharacterCreateModel
+
+@{
+    ViewData["Title"] = "Create Character";
+}
+
+<section class="character-create-shell reveal-up" aria-label="Create Character">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+    <div class="character-create-header">
+        <p class="section-label">New Companion</p>
+        <h1 class="character-create-title">Create Character</h1>
+    </div>
+
+    <form asp-action="Create" method="post" class="character-create-form">
+        <div class="form-group">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PortraitUrl" class="form-label"></label>
+            <input asp-for="PortraitUrl" class="form-control" />
+            <span asp-validation-for="PortraitUrl" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Race" class="form-label"></label>
+            <input asp-for="Race" class="form-control" />
+            <span asp-validation-for="Race" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Background" class="form-label"></label>
+            <input asp-for="Background" class="form-control" />
+            <span asp-validation-for="Background" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Level" class="form-label"></label>
+            <input asp-for="Level" class="form-control" type="number" min="1" max="12" />
+            <span asp-validation-for="Level" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-gold">Create</button>
+            <a asp-action="Index" class="btn-outline-gold">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

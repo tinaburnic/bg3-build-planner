@@ -16,6 +16,7 @@ namespace BG3BuildPlanner.Data
 
         // Navigation property
         public virtual ICollection<Build> Builds { get; set; } = new List<Build>();
+        public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
     }
 }
 

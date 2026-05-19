@@ -25,5 +25,26 @@ namespace BG3BuildPlanner.Controllers
 
             return View(users);
         }
+
+        [HttpGet("{id:int}")]
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = _dbContext.Users
+                .Include(u => u.Builds)
+                .Include(u => u.Ratings)
+                    .ThenInclude(r => r.Build)
+                .FirstOrDefault(u => u.Id == id.Value);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
     }
 }

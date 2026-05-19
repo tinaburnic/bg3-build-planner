@@ -77,9 +77,11 @@ public static class BuildQueryExtensions
 	public static IQueryable<Build> WithDetails(this IQueryable<Build> builds)
 		=> builds
 			.Include(b => b.Character)
+			.Include(b => b.User)
 			.Include(b => b.Items)
 			.Include(b => b.Skills)
-			.Include(b => b.Ratings);
+			.Include(b => b.Ratings)
+				.ThenInclude(r => r.User);
 
 	/// <summary>
 	/// Orders builds by newest first.

@@ -14,6 +14,7 @@ This sitemap lists the HTTP routes exposed by the MVC controllers, along with th
 | /builds/character/{characterId} | Build | ByCharacter | Views/Build/Index.cshtml |
 | /builds/top | Build | Top | Views/Build/Index.cshtml |
 | /users | Users | Index | Views/Users/Index.cshtml |
+| /users/{id} | Users | Details | Views/Users/Details.cshtml |
 | /Character | Character | Index | Views/Character/Index.cshtml |
 | /Character/Details/{id} | Character | Details | Views/Character/Details.cshtml |
 | /Skill | Skill | Index | Views/Skill/Index.cshtml |

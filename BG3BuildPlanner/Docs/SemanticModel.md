@@ -10,6 +10,7 @@ This semantic model describes the core domain entities, their attributes, and re
 - Attributes: Username, Email, PasswordHash
 - Relationships:
   - One-to-many with Build (User.Id -> Build.UserId)
+  - One-to-many with Rating (User.Id -> Rating.UserId)
 
 ### Character
 - Primary key: Id
@@ -48,8 +49,10 @@ This semantic model describes the core domain entities, their attributes, and re
 - Attributes: Score, Comment, CreatedAt
 - Foreign key:
   - BuildId -> Build.Id
+  - UserId -> User.Id
 - Relationships:
   - Many-to-one with Build
+  - Many-to-one with User
 
 ### AbilityScore
 - Primary key: Id
@@ -61,6 +64,7 @@ This semantic model describes the core domain entities, their attributes, and re
 
 ## Cardinality Summary
 - User 1..* Build
+- User 1..* Rating
 - Character 1..* Build
 - Build 1..* Rating
 - Build *..* Skill

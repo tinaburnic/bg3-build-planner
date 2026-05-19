@@ -2,7 +2,12 @@
 
 @{
     ViewData["Title"] = "Build Details";
-    var characterName = ViewData["CharacterName"] as string ?? "Unknown";
+    var characterName = string.IsNullOrWhiteSpace(Model.Character?.Name)
+        ? "Unknown"
+        : Model.Character.Name;
+    var creatorName = string.IsNullOrWhiteSpace(Model.User?.Username)
+        ? "Unknown"
+        : Model.User.Username;
     var difficultyImage = Model.Difficulty switch
     {
         Difficulty.Explorer => "Explorer_Difficulty.jpg",
@@ -47,6 +52,19 @@
                     <dd>@characterName</dd>
                 </div>
                 <div class="build-stat-row">
+                    <dt>Created By</dt>
+                    <dd>
+                        @if (Model.User != null)
+                        {
+                            <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.User.Id">@creatorName</a>
+                        }
+                        else
+                        {
+                            @creatorName
+                        }
+                    </dd>
+                </div>
+                <div class="build-stat-row">
                     <dt>Created</dt>
                     <dd>@Model.CreatedAt.ToString("MMMM dd, yyyy")</dd>
                 </div>
@@ -77,11 +95,36 @@
 
     <div class="build-sub-section">
         <h3>Ratings</h3>
-        <ul>
-        @foreach (var rating in Model.Ratings)
+        @if (Model.Ratings.Count == 0)
         {
-            <li>@rating.Score/5 - @rating.Comment</li>
+            <p>No ratings yet.</p>
         }
-        </ul>
+        else
+        {
+            <ul class="build-rating-list">
+            @foreach (var rating in Model.Ratings.OrderByDescending(r => r.CreatedAt))
+            {
+                var raterName = string.IsNullOrWhiteSpace(rating.User?.Username)
+                    ? "Unknown"
+                    : rating.User.Username;
+
+                <li class="build-rating-card">
+                    <div class="build-rating-user">@raterName</div>
+                    <div class="build-rating-body">
+                        <span class="build-rating-stars" aria-label="@rating.Score out of 5">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                var starClass = i <= rating.Score
+                                    ? "build-rating-star build-rating-star--filled"
+                                    : "build-rating-star";
+                                <span class="@starClass">&#9733;</span>
+                            }
+                        </span>
+                        <span class="build-rating-comment">@rating.Comment</span>
+                    </div>
+                </li>
+            }
+            </ul>
+        }
     </div>
 </section>
