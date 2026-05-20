@@ -28,12 +28,16 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
-        public IActionResult Search(string? term)
+        public IActionResult Search(int? id, string? term)
         {
             var query = _dbContext.Characters
                 .Where(c => c.DeletedAt == null);
 
-            if (!string.IsNullOrWhiteSpace(term))
+            if (id.HasValue)
+            {
+                query = query.Where(c => c.Id == id.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(term))
             {
                 var pattern = $"%{term.Trim()}%";
                 query = query.Where(c => EF.Functions.Like(c.Name, pattern));

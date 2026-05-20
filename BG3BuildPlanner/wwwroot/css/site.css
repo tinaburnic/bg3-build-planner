@@ -398,6 +398,25 @@ a:hover {
   font-size: 0.93rem;
 }
 
+.build-index-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0.65rem;
+}
+
+.build-index-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  background: rgba(35, 28, 22, 0.75);
+  color: #f1e0bc;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+
 .details-link {
   display: inline-block;
   margin-top: 0.25rem;
@@ -1203,8 +1222,43 @@ a:hover {
 }
 
 .skill-index-title {
-  margin: 0.25rem 0 1rem;
+  margin: 0.25rem 0 0.5rem;
   font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.skill-index-lead {
+  color: var(--ink-muted);
+  max-width: 68ch;
+  margin: 0.5rem 0 1.2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.skill-index-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.skill-search {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(216, 179, 106, 0.2);
+}
+
+.skill-search-hint {
+  display: block;
+  margin-top: 0.5rem;
+  color: #998f7d;
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+.skill-empty {
+  text-align: center;
+  color: var(--ink-muted);
+  padding: 2rem 1rem;
+  font-size: 1rem;
 }
 
 .skill-list-shell {
@@ -1399,6 +1453,20 @@ a:hover {
   line-height: 1.55;
   font-size: 1.03rem;
   background: linear-gradient(100deg, rgba(8, 7, 7, 0.45), rgba(40, 29, 18, 0.12));
+}
+
+.skill-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-top: 1px solid rgba(216, 179, 106, 0.2);
+  margin-top: 1rem;
+}
+
+.skill-delete-form {
+  margin: 0;
+  display: inline-flex;
 }
 
 .skill-detail-back {
@@ -1962,277 +2030,6 @@ a:hover {
 }
 
 /* ==========================================================================
-   Skill Index Page
-   ========================================================================== */
-
-.skill-index-shell {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(1.2rem, 2vw, 1.8rem);
-  border: 1px solid var(--edge-gold);
-  border-radius: 10px;
-  background:
-    linear-gradient(148deg, rgba(12, 11, 9, 0.95), rgba(20, 16, 12, 0.9) 55%, rgba(8, 10, 14, 0.84)),
-    radial-gradient(circle at 92% 42%, rgba(58, 154, 165, 0.2), transparent 36%);
-  box-shadow: inset 0 0 0 1px rgba(216, 179, 106, 0.18), 0 16px 32px rgba(0, 0, 0, 0.35);
-}
-
-.skill-index-shell::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(216, 179, 106, 0.35);
-  pointer-events: none;
-}
-
-.skill-index-title {
-  margin: 0.25rem 0 1rem;
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-
-.skill-list-shell {
-  position: relative;
-  z-index: 1;
-  border: 1px solid rgba(216, 179, 106, 0.44);
-  border-radius: 8px;
-  overflow: hidden;
-  background: rgba(10, 9, 8, 0.8);
-}
-
-.skill-list-row {
-  display: grid;
-  grid-template-columns: minmax(180px, 1.2fr) 2fr 110px;
-  align-items: center;
-}
-
-.skill-list-row > span {
-  padding: 0.9rem 1rem;
-  border-right: 1px solid rgba(216, 179, 106, 0.2);
-}
-
-.skill-list-row > span:last-child {
-  border-right: none;
-}
-
-.skill-list-row--head {
-  background: rgba(8, 8, 8, 0.9);
-  border-bottom: 1px solid rgba(216, 179, 106, 0.44);
-}
-
-.skill-list-row--head > span {
-  font-family: var(--font-display);
-  color: #e7cf9a;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.9rem;
-}
-
-.skill-list-link,
-.skill-list-link:visited,
-.skill-list-link:hover,
-.skill-list-link:focus {
-  color: inherit;
-  text-decoration: none;
-}
-
-.skill-list-link {
-  border-bottom: 1px solid rgba(216, 179, 106, 0.16);
-  transition: background-color 170ms ease;
-}
-
-.skill-list-link:last-child {
-  border-bottom: none;
-}
-
-.skill-list-link:nth-child(odd) {
-  background: linear-gradient(95deg, rgba(10, 10, 10, 0.8), rgba(45, 32, 19, 0.24) 52%, rgba(8, 8, 8, 0.8));
-}
-
-.skill-list-link:hover,
-.skill-list-link:focus-visible {
-  background: linear-gradient(95deg, rgba(21, 16, 11, 0.82), rgba(77, 55, 31, 0.34) 52%, rgba(17, 12, 8, 0.82));
-}
-
-.skill-col-name {
-  color: #f3e4c3;
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-}
-
-.skill-col-desc {
-  color: #dfd4bb;
-  line-height: 1.4;
-}
-
-.skill-col-level {
-  color: #f0d7a1;
-  font-weight: 700;
-  text-align: right;
-}
-
-/* ==========================================================================
-   Skill Details Page
-   ========================================================================== */
-
-.skill-detail-shell {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(1.15rem, 2.1vw, 1.8rem);
-  border: 1px solid var(--edge-gold);
-  border-radius: 10px;
-  background:
-    linear-gradient(150deg, rgba(12, 11, 9, 0.95), rgba(19, 15, 12, 0.9) 56%, rgba(6, 9, 13, 0.86)),
-    radial-gradient(circle at 90% 45%, rgba(52, 150, 164, 0.22), transparent 36%);
-  box-shadow: inset 0 0 0 1px rgba(216, 179, 106, 0.2), 0 16px 32px rgba(0, 0, 0, 0.35);
-}
-
-.skill-detail-shell::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(216, 179, 106, 0.35);
-  pointer-events: none;
-}
-
-.skill-detail-title {
-  margin: 0.25rem 0 1rem;
-  font-size: clamp(1.9rem, 4.5vw, 2.8rem);
-}
-
-.skill-detail-layout {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(220px, 320px) 1fr;
-  gap: 1rem;
-}
-
-.skill-image-panel {
-  margin: 0;
-  border: 1px solid rgba(216, 179, 106, 0.45);
-  background: rgba(11, 10, 9, 0.9);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
-}
-
-.skill-detail-image {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-}
-
-.skill-image-caption {
-  margin: 0;
-  padding: 0.5rem 0.7rem;
-  color: #e5d7b5;
-  border-top: 1px solid rgba(216, 179, 106, 0.3);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.skill-detail-card {
-  border: 1px solid rgba(216, 179, 106, 0.38);
-  border-radius: 8px;
-  background: rgba(12, 10, 9, 0.88);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
-}
-
-.skill-detail-card-header {
-  padding: 0.9rem 1rem 0.8rem;
-  border-bottom: 1px solid rgba(216, 179, 106, 0.28);
-}
-
-.skill-detail-card-header h2 {
-  margin: 0;
-  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
-}
-
-.skill-detail-table {
-  margin: 0;
-}
-
-.skill-detail-row {
-  display: grid;
-  grid-template-columns: 170px 1fr;
-  border-top: 1px solid rgba(216, 179, 106, 0.24);
-}
-
-.skill-detail-row:first-child {
-  border-top: none;
-}
-
-.skill-detail-row dt,
-.skill-detail-row dd {
-  margin: 0;
-  padding: 0.9rem 1rem;
-}
-
-.skill-detail-row dt {
-  color: #ead8b1;
-  font-family: var(--font-display);
-  font-size: 1.06rem;
-  border-right: 1px solid rgba(216, 179, 106, 0.24);
-}
-
-.skill-detail-row dd {
-  color: #f1e9d3;
-  line-height: 1.55;
-  font-size: 1.03rem;
-  background: linear-gradient(100deg, rgba(8, 7, 7, 0.45), rgba(40, 29, 18, 0.12));
-}
-
-.skill-detail-back {
-  margin: 0.95rem 1rem 1rem;
-}
-
-@media (max-width: 991.98px) {
-  .skill-detail-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .skill-image-panel {
-    max-width: 420px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .skill-list-row {
-    grid-template-columns: 1fr;
-  }
-
-  .skill-list-row > span {
-    border-right: none;
-    border-bottom: 1px solid rgba(216, 179, 106, 0.14);
-  }
-
-  .skill-list-row > span:last-child {
-    border-bottom: none;
-  }
-
-  .skill-col-level {
-    text-align: left;
-  }
-}
-
-@media (max-width: 575.98px) {
-  .skill-detail-shell::before {
-    inset: 8px;
-  }
-
-  .skill-detail-row {
-    grid-template-columns: 1fr;
-  }
-
-  .skill-detail-row dt {
-    border-right: none;
-    border-bottom: 1px solid rgba(216, 179, 106, 0.24);
-  }
-}
-
-/* ==========================================================================
    Build Index Page
    ========================================================================== */
 
@@ -2599,6 +2396,118 @@ a:hover {
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 0.5rem;
+}
+
+/* ==========================================================================
+   Skill Create/Edit Page
+   ========================================================================== */
+
+.skill-create-shell,
+.skill-edit-shell {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.2rem, 2vw, 1.8rem);
+  border: 1px solid var(--edge-gold);
+  border-radius: 10px;
+  background:
+    linear-gradient(150deg, rgba(12, 11, 9, 0.95), rgba(20, 16, 12, 0.9) 55%, rgba(8, 10, 14, 0.84)),
+    radial-gradient(circle at 92% 42%, rgba(58, 154, 165, 0.2), transparent 36%);
+  box-shadow: inset 0 0 0 1px rgba(216, 179, 106, 0.18), 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+.skill-create-shell::before,
+.skill-edit-shell::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  pointer-events: none;
+}
+
+.skill-create-header,
+.skill-edit-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1.4rem;
+}
+
+.skill-create-title,
+.skill-edit-title {
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.9rem, 4.4vw, 2.8rem);
+}
+
+.skill-create-form,
+.skill-edit-form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  max-width: 640px;
+}
+
+.skill-create-form .form-group,
+.skill-edit-form .form-group {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.skill-create-form .form-label,
+.skill-edit-form .form-label {
+  color: #e7cf9a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.skill-create-form .form-control,
+.skill-edit-form .form-control {
+  background: rgba(9, 8, 7, 0.78);
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  color: var(--ink-ivory);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+}
+
+.skill-create-form .form-control::placeholder,
+.skill-edit-form .form-control::placeholder {
+  color: rgba(240, 232, 210, 0.5);
+}
+
+.skill-create-form .text-danger,
+.skill-edit-form .text-danger {
+  color: #f2b29a !important;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+.skill-create-form .input-validation-error,
+.skill-create-form .input-validation-error:focus,
+.skill-edit-form .input-validation-error,
+.skill-edit-form .input-validation-error:focus {
+  border-color: rgba(241, 143, 104, 0.9);
+  box-shadow: 0 0 0 1px rgba(241, 143, 104, 0.28);
+}
+
+.skill-create-form .form-actions,
+.skill-edit-form .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .skill-create-shell::before,
+  .skill-edit-shell::before {
+    inset: 8px;
+  }
+
+  .skill-create-form,
+  .skill-edit-form {
+    max-width: none;
+  }
 }
 
 @media (max-width: 575.98px) {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +12,8 @@ namespace BG3BuildPlanner.Data
 		public required string Description { get; set; }
 		public int RequiredLevel { get; set; }
 		public required string ImageUrl { get; set; } = string.Empty;
+		public DateTime CreatedAt { get; set; }
+		public DateTime? DeletedAt { get; set; }
 
 		public virtual ICollection<Build> Builds { get; set; } = new List<Build>();
 	}

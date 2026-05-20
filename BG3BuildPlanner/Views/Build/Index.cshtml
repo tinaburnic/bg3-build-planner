@@ -8,6 +8,7 @@
          aria-label="Build Index"
          data-live-search
          data-live-search-input="#build-search-input"
+         data-live-search-id-input="#build-search-id"
          data-live-search-results="[data-build-grid]"
          data-live-search-empty="[data-build-empty]"
          data-live-search-url="@Url.Action("Search", "Build")"
@@ -50,6 +51,10 @@
                 ? "Unknown"
                 : build.Character.Name;
 
+            var creatorName = string.IsNullOrWhiteSpace(build.User?.Username)
+                ? "Unknown"
+                : build.User.Username;
+
             var shortDescription = string.IsNullOrWhiteSpace(build.Description)
                 ? "No description available."
                 : (build.Description.Length > 110 ? build.Description.Substring(0, 107) + "..." : build.Description);
@@ -62,7 +67,11 @@
                     <div class="build-index-card-body">
                         <div class="build-index-detail"><span class="detail-label">Difficulty</span> @build.Difficulty</div>
                         <div class="build-index-detail"><span class="detail-label">Character</span> @characterName</div>
+                        <div class="build-index-badges">
+                            <span class="build-index-badge">Creator: @creatorName</span>
+                        </div>
                         <p class="build-index-description">@shortDescription</p>
+                        <span class="details-link">View Details</span>
                     </div>
                 </article>
             </a>

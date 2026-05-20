@@ -32,12 +32,22 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet("search")]
-        public IActionResult Search(string? term)
+        public IActionResult Search(int? id, string? term)
         {
-            var builds = _dbContext.Builds
+            var buildsQuery = _dbContext.Builds
                 .Active()
-                .WithDetails()
-                .SearchTitle(term)
+                .WithDetails();
+
+            if (id.HasValue)
+            {
+                buildsQuery = buildsQuery.Where(b => b.Id == id.Value);
+            }
+            else
+            {
+                buildsQuery = buildsQuery.SearchTitle(term);
+            }
+
+            var builds = buildsQuery
                 .OrderBy(b => b.Title)
                 .Select(b => new
                 {
@@ -45,7 +55,8 @@ namespace BG3BuildPlanner.Controllers
                     b.Title,
                     b.Description,
                     Difficulty = b.Difficulty.ToString(),
-                    CharacterName = b.Character != null ? b.Character.Name : "Unknown"
+                    CharacterName = b.Character != null ? b.Character.Name : "Unknown",
+                    CreatorName = b.User != null ? b.User.Username : "Unknown"
                 })
                 .ToList();
 

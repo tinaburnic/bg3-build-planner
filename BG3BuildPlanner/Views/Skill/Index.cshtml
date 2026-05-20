@@ -4,7 +4,16 @@
     ViewData["Title"] = "Skills";
 }
 
-<section class="skill-index-shell reveal-up" aria-label="Skill Index">
+<section class="skill-index-shell reveal-up"
+         aria-label="Skill Index"
+         data-live-search
+         data-live-search-input="#skill-search-input"
+         data-live-search-id-input="#skill-search-id"
+         data-live-search-results="[data-skill-grid]"
+         data-live-search-empty="[data-skill-empty]"
+         data-live-search-url="@Url.Action("Search", "Skill")"
+         data-live-search-renderer="renderSkillCard"
+         data-live-search-debounce="250">
     <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
@@ -12,6 +21,27 @@
 
     <p class="section-label">Arcane Arsenal</p>
     <h1 class="skill-index-title">Skill Compendium</h1>
+    <p class="skill-index-lead">
+        Browse each skill and explore tactical breakdowns. Discover interactions and build synergies.
+    </p>
+    <div class="skill-index-actions">
+        <a asp-action="Create" class="btn-gold">Create New Skill</a>
+    </div>
+
+    <div class="skill-search" aria-label="Search skills">
+        @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+        {
+            InputId = "skill-search-input",
+            InputName = "SkillSearch",
+            HiddenInputId = "skill-search-id",
+            HiddenInputName = "SkillId",
+            Label = "Search by name",
+            Placeholder = "Type a skill name",
+            EndpointUrl = Url.Action("Autocomplete", "Skill") ?? string.Empty,
+            MinLength = 2
+        })
+        <span class="skill-search-hint">Live search updates the skill list as you type.</span>
+    </div>
 
     <div class="skill-list-shell" role="table" aria-label="Skills List">
         <div class="skill-list-head" role="rowgroup">
@@ -22,14 +52,14 @@
             </div>
         </div>
 
-        <div role="rowgroup">
+        <div role="rowgroup" data-skill-grid data-reveal-container>
             @foreach (var skill in Model)
             {
                 var shortDescription = string.IsNullOrWhiteSpace(skill.Description)
                     ? "No description available."
                     : (skill.Description.Length > 92 ? skill.Description.Substring(0, 89) + "..." : skill.Description);
 
-                <a asp-action="Details" asp-route-id="@skill.Id" class="skill-list-row skill-list-link" role="row" aria-label="View details for @skill.Name">
+                <a asp-action="Details" asp-route-id="@skill.Id" class="skill-list-row skill-list-link" role="row" aria-label="View details for @skill.Name" data-reveal-item>
                     <span class="skill-col-name" role="cell">@skill.Name</span>
                     <span class="skill-col-desc" role="cell">@shortDescription</span>
                     <span class="skill-col-level" role="cell">@skill.RequiredLevel</span>
@@ -37,5 +67,7 @@
             }
         </div>
     </div>
+
+    <p class="skill-empty" data-skill-empty hidden>No skills match this search.</p>
 </section>
 

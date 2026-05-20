@@ -86,8 +86,20 @@ const renderBuildCard = (build) => {
 		: fullDescription || "No description available.";
 	description.textContent = trimmed;
 
+	const badges = document.createElement("div");
+	badges.className = "build-index-badges";
+
+	const creator = document.createElement("span");
+	creator.className = "build-index-badge";
+	creator.textContent = `Creator: ${build.creatorName || "Unknown"}`;
+
+	const details = document.createElement("span");
+	details.className = "details-link";
+	details.textContent = "View Details";
+
 	header.append(name);
-	body.append(difficulty, character, description);
+	badges.append(creator);
+	body.append(difficulty, character, badges, description, details);
 	card.append(header, body);
 	link.append(card);
 
@@ -95,6 +107,39 @@ const renderBuildCard = (build) => {
 };
 
 window.renderBuildCard = renderBuildCard;
+
+const renderSkillCard = (skill) => {
+	const link = document.createElement("a");
+	link.className = "skill-list-row skill-list-link";
+	link.href = `/Skill/Details/${skill.id}`;
+	link.setAttribute("role", "row");
+	link.setAttribute("aria-label", `View details for ${skill.name}`);
+	link.setAttribute("data-reveal-item", "");
+
+	const name = document.createElement("span");
+	name.className = "skill-col-name";
+	name.setAttribute("role", "cell");
+	name.textContent = skill.name;
+
+	const description = document.createElement("span");
+	description.className = "skill-col-desc";
+	description.setAttribute("role", "cell");
+	const fullDescription = skill.description || "";
+	const trimmed = fullDescription.length > 92
+		? `${fullDescription.substring(0, 89)}...`
+		: fullDescription || "No description available.";
+	description.textContent = trimmed;
+
+	const level = document.createElement("span");
+	level.className = "skill-col-level";
+	level.setAttribute("role", "cell");
+	level.textContent = skill.requiredLevel;
+
+	link.append(name, description, level);
+	return link;
+};
+
+window.renderSkillCard = renderSkillCard;
 
 const applyStaggerReveal = (container) => {
 	if (!container) {
@@ -268,6 +313,7 @@ const initLiveSearch = (root) => {
 	const inputSelector = root.dataset.liveSearchInput;
 	const resultsSelector = root.dataset.liveSearchResults;
 	const emptySelector = root.dataset.liveSearchEmpty;
+	const idInputSelector = root.dataset.liveSearchIdInput;
 	const url = root.dataset.liveSearchUrl;
 	const rendererName = root.dataset.liveSearchRenderer;
 	const debounce = parseInt(root.dataset.liveSearchDebounce, 10) || 250;
@@ -280,6 +326,7 @@ const initLiveSearch = (root) => {
 	const results = document.querySelector(resultsSelector);
 	const emptyState = emptySelector ? document.querySelector(emptySelector) : null;
 	const renderer = window[rendererName];
+	const idInput = idInputSelector ? document.querySelector(idInputSelector) : null;
 
 	if (!input || !results || typeof renderer !== "function") {
 		return;
@@ -301,7 +348,14 @@ const initLiveSearch = (root) => {
 
 	const performSearch = async () => {
 		const term = input.value.trim();
-		const requestUrl = `${url}?term=${encodeURIComponent(term)}`;
+		const selectedId = idInput && idInput.value ? idInput.value : "";
+		const params = new URLSearchParams();
+		if (selectedId) {
+			params.set("id", selectedId);
+		} else {
+			params.set("term", term);
+		}
+		const requestUrl = `${url}?${params.toString()}`;
 
 		try {
 			const response = await fetch(requestUrl, {
@@ -326,6 +380,15 @@ const initLiveSearch = (root) => {
 
 		searchTimer = window.setTimeout(performSearch, debounce);
 	});
+
+	if (idInput) {
+		idInput.addEventListener("input", () => {
+			if (searchTimer) {
+				window.clearTimeout(searchTimer);
+			}
+			performSearch();
+		});
+	}
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -372,6 +435,7 @@ if (window.jQuery) {
 			var $validation = $shell.find("[data-autocomplete-validation]");
 			var debounceTimer = null;
 			var items = [];
+			var suppressClear = false;
 			var activeIndex = -1;
 
 			if ($input.length === 0 || !endpoint || $list.length === 0) {
@@ -397,7 +461,9 @@ if (window.jQuery) {
 				$input.val(item.text || "");
 				if ($hidden.length) {
 					$hidden.val(item.id || "");
+					$hidden.trigger("input");
 				}
+				suppressClear = true;
 				if ($validation.length) {
 					$validation.text("");
 				}
@@ -456,6 +522,11 @@ if (window.jQuery) {
 				if (debounceTimer) {
 					window.clearTimeout(debounceTimer);
 				}
+				if (!suppressClear && $hidden.length) {
+					$hidden.val("");
+					$hidden.trigger("input");
+				}
+				suppressClear = false;
 				if ($validation.length) {
 					$validation.text("");
 				}
