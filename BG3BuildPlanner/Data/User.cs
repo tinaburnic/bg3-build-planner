@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,6 +14,8 @@ namespace BG3BuildPlanner.Data
         public required string Email { get; set; }
         [Required]
         public required string PasswordHash { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         // Navigation property
         public virtual ICollection<Build> Builds { get; set; } = new List<Build>();

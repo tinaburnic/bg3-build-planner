@@ -23,31 +23,36 @@ namespace BG3BuildPlanner.Data
 				{
 					Username = "demo",
 					Email = "demo@example.com",
-					PasswordHash = "demo"
+					PasswordHash = "demo",
+					CreatedAt = DateTime.UtcNow
 				},
 				new User
 				{
 					Username = "aria",
 					Email = "aria@baldurs-gate.com",
-					PasswordHash = "aria"
+					PasswordHash = "aria",
+					CreatedAt = DateTime.UtcNow
 				},
 				new User
 				{
 					Username = "bren",
 					Email = "bren@baldurs-gate.com",
-					PasswordHash = "bren"
+					PasswordHash = "bren",
+					CreatedAt = DateTime.UtcNow
 				},
 				new User
 				{
 					Username = "kestrel",
 					Email = "kestrel@baldurs-gate.com",
-					PasswordHash = "kestrel"
+					PasswordHash = "kestrel",
+					CreatedAt = DateTime.UtcNow
 				},
 				new User
 				{
 					Username = "lyra",
 					Email = "lyra@baldurs-gate.com",
-					PasswordHash = "lyra"
+					PasswordHash = "lyra",
+					CreatedAt = DateTime.UtcNow
 				}
 			};
 

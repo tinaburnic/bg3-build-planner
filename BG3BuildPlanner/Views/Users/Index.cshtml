@@ -1,3 +1,4 @@
+@using System.Collections.Generic
 @using System.Linq
 @model IEnumerable<BG3BuildPlanner.Data.User>
 
@@ -5,7 +6,16 @@
     ViewData["Title"] = "Users";
 }
 
-<section class="user-index-shell reveal-up" aria-label="User Index">
+<section class="user-index-shell reveal-up"
+         aria-label="User Index"
+         data-live-search
+         data-live-search-input="#user-search-input"
+         data-live-search-id-input="#user-search-id"
+         data-live-search-results="[data-user-grid]"
+         data-live-search-empty="[data-user-empty]"
+         data-live-search-url="@Url.Action("Search", "Users")"
+         data-live-search-renderer="renderUserCard"
+         data-live-search-debounce="250">
     <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
@@ -18,12 +28,32 @@
         and dive into the tactical legacy they have forged.
     </p>
 
-    <div class="user-grid">
+    <div class="user-index-actions">
+        <a asp-action="Create" class="btn-gold">Create New User</a>
+    </div>
+
+    <div class="user-search" aria-label="Search users">
+        @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+        {
+            InputId = "user-search-input",
+            InputName = "UserSearch",
+            HiddenInputId = "user-search-id",
+            HiddenInputName = "UserId",
+            Label = "Search by username",
+            Placeholder = "Type a username",
+            EndpointUrl = Url.Action("Autocomplete", "Users") ?? string.Empty,
+            MinLength = 2
+        })
+        <span class="user-search-hint">Live search updates the registry as you type.</span>
+    </div>
+
+    <div class="user-grid" data-user-grid data-reveal-container>
         @foreach (var user in Model)
         {
-            var buildCount = user.Builds?.Count ?? 0;
+            var activeBuilds = user.Builds?.Where(b => b.DeletedAt == null).ToList() ?? new List<BG3BuildPlanner.Data.Build>();
+            var buildCount = activeBuilds.Count;
 
-            <article class="user-card" aria-label="@user.Username profile">
+            <article class="user-card" aria-label="@user.Username profile" data-reveal-item>
                 <a class="user-card-link" asp-action="Details" asp-route-id="@user.Id" aria-label="View @user.Username profile"></a>
                 <header class="user-card-header">
                     <h2 class="user-name">@user.Username</h2>
@@ -39,7 +69,7 @@
                         else
                         {
                             <div class="user-builds">
-                                @foreach (var build in user.Builds.OrderBy(b => b.Title))
+                                @foreach (var build in activeBuilds.OrderBy(b => b.Title))
                                 {
                                     <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id" class="user-build-badge">
                                         @build.Title
@@ -52,4 +82,6 @@
             </article>
         }
     </div>
+
+    <p class="user-empty" data-user-empty hidden>No users match this search.</p>
 </section>

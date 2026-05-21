@@ -141,6 +141,64 @@ const renderSkillCard = (skill) => {
 
 window.renderSkillCard = renderSkillCard;
 
+const renderUserCard = (user) => {
+	const card = document.createElement("article");
+	card.className = "user-card";
+	card.setAttribute("data-reveal-item", "");
+
+	const link = document.createElement("a");
+	link.className = "user-card-link";
+	link.href = `/users/${user.id}`;
+	link.setAttribute("aria-label", `View ${user.username} profile`);
+
+	const header = document.createElement("header");
+	header.className = "user-card-header";
+
+	const name = document.createElement("h2");
+	name.className = "user-name";
+	name.textContent = user.username;
+
+	const body = document.createElement("div");
+	body.className = "user-card-body";
+
+	const buildCount = Number.isFinite(user.buildCount) ? user.buildCount : 0;
+	const buildLabel = buildCount === 1 ? "build" : "builds";
+
+	const buildCountLine = document.createElement("div");
+	buildCountLine.className = "user-detail";
+	buildCountLine.innerHTML = `<span class="detail-label">Builds</span> ${buildCount} ${buildLabel}`;
+
+	const buildList = document.createElement("div");
+	buildList.className = "user-detail user-detail--builds";
+	buildList.innerHTML = '<span class="detail-label">Build List</span>';
+
+	if (!user.builds || user.builds.length === 0) {
+		const empty = document.createElement("div");
+		empty.className = "user-build-empty";
+		empty.textContent = "No builds recorded yet. The campfire still waits.";
+		buildList.append(empty);
+	} else {
+		const buildsWrap = document.createElement("div");
+		buildsWrap.className = "user-builds";
+		user.builds.forEach((build) => {
+			const buildLink = document.createElement("a");
+			buildLink.className = "user-build-badge";
+			buildLink.href = `/builds/${build.id}`;
+			buildLink.textContent = build.title;
+			buildsWrap.append(buildLink);
+		});
+		buildList.append(buildsWrap);
+	}
+
+	header.append(name);
+	body.append(buildCountLine, buildList);
+	card.append(link, header, body);
+
+	return card;
+};
+
+window.renderUserCard = renderUserCard;
+
 const applyStaggerReveal = (container) => {
 	if (!container) {
 		return;

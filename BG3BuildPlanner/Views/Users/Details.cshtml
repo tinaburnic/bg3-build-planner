@@ -1,14 +1,19 @@
+@using System.Collections.Generic
 @using System.Linq
 @model BG3BuildPlanner.Data.User
 
 @{
     ViewData["Title"] = Model.Username;
     var portraitUrl = Url.Content("~/images/characters/placeholder.svg");
-    var buildCount = Model.Builds?.Count ?? 0;
-    var ratingCount = Model.Ratings?.Count ?? 0;
+    var activeBuilds = Model.Builds?.Where(b => b.DeletedAt == null).ToList() ?? new List<BG3BuildPlanner.Data.Build>();
+    var buildCount = activeBuilds.Count;
+    var ratingCount = Model.Ratings?.Count(r => r.Build != null && r.Build.DeletedAt == null) ?? 0;
+    var createdAt = Model.CreatedAt == default
+        ? "Unknown"
+        : Model.CreatedAt.ToString("MMMM dd, yyyy");
 }
 
-<section class="character-detail-shell reveal-up" aria-label="User Detail">
+<section class="character-detail-shell reveal-up" aria-label="User Detail" data-remove-target>
     <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
     <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
@@ -30,6 +35,14 @@
 
             <dl class="character-stat-table">
                 <div class="character-stat-row">
+                    <dt>Email</dt>
+                    <dd>@Model.Email</dd>
+                </div>
+                <div class="character-stat-row">
+                    <dt>Joined</dt>
+                    <dd>@createdAt</dd>
+                </div>
+                <div class="character-stat-row">
                     <dt>Builds</dt>
                     <dd>@buildCount</dd>
                 </div>
@@ -39,7 +52,14 @@
                 </div>
             </dl>
 
-            <a asp-action="Index" class="btn btn-outline-gold character-detail-back">Back to Users</a>
+            <div class="character-detail-actions">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit User</a>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="character-delete-form" data-delete-form data-delete-target=".character-detail-shell">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this user?');">Delete User</button>
+                </form>
+                <a asp-action="Index" class="btn-outline-gold">Back to Users</a>
+            </div>
         </article>
     </div>
 
@@ -52,7 +72,7 @@
         else
         {
             <ul>
-            @foreach (var build in Model.Builds.OrderBy(b => b.Title))
+            @foreach (var build in activeBuilds.OrderBy(b => b.Title))
             {
                 <li>
                     <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id">@build.Title</a>
@@ -71,7 +91,7 @@
         else
         {
             <ul>
-            @foreach (var rating in Model.Ratings.Where(r => r.Build != null).OrderByDescending(r => r.CreatedAt))
+            @foreach (var rating in Model.Ratings.Where(r => r.Build != null && r.Build.DeletedAt == null).OrderByDescending(r => r.CreatedAt))
             {
                 var buildTitle = rating.Build?.Title ?? "Unknown build";
                 <li>

@@ -160,6 +160,7 @@ namespace BG3BuildPlanner.Controllers
             }
 
             var user = _dbContext.Users
+                .Active()
                 .FirstOrDefault(u => u.Id == model.UserId);
             if (user == null)
             {
@@ -217,6 +218,7 @@ namespace BG3BuildPlanner.Controllers
                 .Select(c => c.Name)
                 .FirstOrDefaultAsync();
             ViewData["UserName"] = await _dbContext.Users
+                .Active()
                 .Where(u => u.Id == build.UserId)
                 .Select(u => u.Username)
                 .FirstOrDefaultAsync();
