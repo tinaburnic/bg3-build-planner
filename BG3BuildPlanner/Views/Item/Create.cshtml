@@ -1,0 +1,55 @@
+@model BG3BuildPlanner.Models.Item.ItemCreateModel
+@using BG3BuildPlanner.Data
+
+@{
+    ViewData["Title"] = "Create Item";
+}
+
+<section class="skill-create-shell reveal-up" aria-label="Create Item">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+    <div class="skill-create-header">
+        <p class="section-label">New Armament</p>
+        <h1 class="skill-create-title">Create Item</h1>
+    </div>
+
+    <form asp-action="Create" method="post" class="skill-create-form">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+        <div class="form-group">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Type" class="form-label"></label>
+            <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<ItemType>()"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Rarity" class="form-label"></label>
+            <input asp-for="Rarity" class="form-control" />
+            <span asp-validation-for="Rarity" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Power" class="form-label"></label>
+            <input asp-for="Power" class="form-control" type="number" min="0" />
+            <span asp-validation-for="Power" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-gold">Create</button>
+            <a asp-action="Index" class="btn-outline-gold">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,70 @@
+@model IEnumerable<BG3BuildPlanner.Data.Item>
+
+@{
+    ViewData["Title"] = "Items";
+}
+
+<section class="skill-index-shell reveal-up"
+         aria-label="Item Index"
+         data-live-search
+         data-live-search-input="#item-search-input"
+         data-live-search-id-input="#item-search-id"
+         data-live-search-results="[data-item-grid]"
+         data-live-search-empty="[data-item-empty]"
+         data-live-search-url="@Url.Action("Search", "Item")"
+         data-live-search-renderer="renderItemRow"
+         data-live-search-debounce="250">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+    <p class="section-label">Forge Inventory</p>
+    <h1 class="skill-index-title">Item Armory</h1>
+    <p class="skill-index-lead">
+        Browse equipment across tiers and compare their combat potential at a glance.
+    </p>
+    <div class="skill-index-actions">
+        <a asp-action="Create" class="btn-gold">Create New Item</a>
+    </div>
+
+    <div class="skill-search" aria-label="Search items">
+        @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
+        {
+            InputId = "item-search-input",
+            InputName = "ItemSearch",
+            HiddenInputId = "item-search-id",
+            HiddenInputName = "ItemId",
+            Label = "Search by name",
+            Placeholder = "Type an item name",
+            EndpointUrl = Url.Action("Autocomplete", "Item") ?? string.Empty,
+            MinLength = 2
+        })
+        <span class="skill-search-hint">Live search updates the item list as you type.</span>
+    </div>
+
+    <div class="item-list-shell" role="table" aria-label="Items List">
+        <div class="item-list-head" role="rowgroup">
+            <div class="item-list-row item-list-row--head" role="row">
+                <span role="columnheader">Item</span>
+                <span role="columnheader">Type</span>
+                <span role="columnheader">Rarity</span>
+                <span role="columnheader">Power</span>
+            </div>
+        </div>
+
+        <div role="rowgroup" data-item-grid data-reveal-container>
+            @foreach (var item in Model)
+            {
+                <a asp-action="Details" asp-route-id="@item.Id" class="item-list-row item-list-link" role="row" aria-label="View details for @item.Name" data-reveal-item>
+                    <span class="item-col-name" role="cell">@item.Name</span>
+                    <span class="item-col-type" role="cell">@item.Type</span>
+                    <span class="item-col-rarity" role="cell">@item.Rarity</span>
+                    <span class="item-col-power" role="cell">@item.Power</span>
+                </a>
+            }
+        </div>
+    </div>
+
+    <p class="skill-empty" data-item-empty hidden>No items match this search.</p>
+</section>

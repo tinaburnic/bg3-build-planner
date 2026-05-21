@@ -141,6 +141,41 @@ const renderSkillCard = (skill) => {
 
 window.renderSkillCard = renderSkillCard;
 
+const renderItemRow = (item) => {
+	const row = document.createElement("a");
+	row.className = "item-list-row item-list-link";
+	row.href = `/Item/Details/${item.id}`;
+	row.setAttribute("role", "row");
+	row.setAttribute("aria-label", `View details for ${item.name}`);
+	row.setAttribute("data-reveal-item", "");
+
+	const name = document.createElement("span");
+	name.className = "item-col-name";
+	name.setAttribute("role", "cell");
+	name.textContent = item.name;
+
+	const type = document.createElement("span");
+	type.className = "item-col-type";
+	type.setAttribute("role", "cell");
+	type.textContent = item.type || "Unknown";
+
+	const rarity = document.createElement("span");
+	rarity.className = "item-col-rarity";
+	rarity.setAttribute("role", "cell");
+	rarity.textContent = item.rarity || "Unknown";
+
+	const power = document.createElement("span");
+	power.className = "item-col-power";
+	power.setAttribute("role", "cell");
+	const powerValue = Number.isFinite(item.power) ? item.power : "-";
+	power.textContent = powerValue;
+
+	row.append(name, type, rarity, power);
+	return row;
+};
+
+window.renderItemRow = renderItemRow;
+
 const renderUserCard = (user) => {
 	const card = document.createElement("article");
 	card.className = "user-card";

@@ -1,0 +1,60 @@
+@model BG3BuildPlanner.Data.Item
+
+@{
+    ViewData["Title"] = "Item Details";
+    var itemImage = Url.Content("~/images/skills/Bless.jpg");
+    var buildCount = Model.Builds?.Count ?? 0;
+    var buildLabel = buildCount == 1 ? "build" : "builds";
+}
+
+<section class="skill-detail-shell reveal-up" aria-label="Item Detail">
+    <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+    <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+
+    <p class="section-label">Item Profile</p>
+    <h1 class="skill-detail-title">@Model.Name</h1>
+
+    <div class="skill-detail-layout">
+        <figure class="skill-image-panel">
+            <img src="@itemImage" alt="Artwork for @Model.Name" class="skill-detail-image" />
+            <figcaption class="skill-image-caption">@Model.Name</figcaption>
+        </figure>
+
+        <article class="skill-detail-card" aria-label="Item Information">
+            <header class="skill-detail-card-header">
+                <p class="section-label mb-1">Overview</p>
+                <h2>@Model.Name</h2>
+            </header>
+
+            <dl class="skill-detail-table">
+                <div class="skill-detail-row">
+                    <dt>Type</dt>
+                    <dd>@Model.Type</dd>
+                </div>
+                <div class="skill-detail-row">
+                    <dt>Rarity</dt>
+                    <dd>@Model.Rarity</dd>
+                </div>
+                <div class="skill-detail-row">
+                    <dt>Power</dt>
+                    <dd>@Model.Power</dd>
+                </div>
+                <div class="skill-detail-row">
+                    <dt>Used In</dt>
+                    <dd>@buildCount @buildLabel</dd>
+                </div>
+            </dl>
+
+            <div class="skill-detail-actions">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Item</a>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="skill-delete-form" data-delete-form>
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this item?');">Delete Item</button>
+                </form>
+                <a asp-action="Index" class="btn-outline-gold">Back to Items</a>
+            </div>
+        </article>
+    </div>
+</section>
