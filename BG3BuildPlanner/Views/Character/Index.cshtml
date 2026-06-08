@@ -26,7 +26,10 @@
         Every profile links directly to a deeper tactical breakdown.
     </p>
     <div class="character-index-actions">
-        <a asp-action="Create" class="btn-gold">Create New Character</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn-gold">Create New Character</a>
+        }
     </div>
 
     <div class="character-search" aria-label="Search characters">

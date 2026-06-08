@@ -70,11 +70,22 @@
                 </div>
             </dl>
             <div class="build-detail-actions">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Build</a>
-                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="build-detail-delete" data-delete-form data-delete-target=".build-detail-shell">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this build?');">Delete Build</button>
-                </form>
+                @{
+                    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    var isOwner = currentUserId == Model.UserId.ToString();
+                    var canEditBuild = User.IsInRole("Admin") || isOwner;
+                }
+                @if (canEditBuild)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Build</a>
+                }
+                @if (User.IsInRole("Admin") || isOwner)
+                {
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="build-detail-delete" data-delete-form data-delete-target=".build-detail-shell">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this build?');">Delete Build</button>
+                    </form>
+                }
                 <a asp-action="Index" class="btn-outline-gold">Back to Build List</a>
             </div>
         </article>

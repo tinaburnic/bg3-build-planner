@@ -1,6 +1,6 @@
 @using System.Collections.Generic
 @using System.Linq
-@model IEnumerable<BG3BuildPlanner.Data.User>
+@model IEnumerable<BG3BuildPlanner.Data.AppUser>
 
 @{
     ViewData["Title"] = "Users";
@@ -29,7 +29,10 @@
     </p>
 
     <div class="user-index-actions">
-        <a asp-action="Create" class="btn-gold">Create New User</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn-gold">Create New User</a>
+        }
     </div>
 
     <div class="user-search" aria-label="Search users">

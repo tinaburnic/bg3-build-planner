@@ -1,6 +1,6 @@
 @using System.Collections.Generic
 @using System.Linq
-@model BG3BuildPlanner.Data.User
+@model BG3BuildPlanner.Data.AppUser
 
 @{
     ViewData["Title"] = Model.Username;
@@ -53,11 +53,21 @@
             </dl>
 
             <div class="character-detail-actions">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit User</a>
-                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="character-delete-form" data-delete-form data-delete-target=".character-detail-shell">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this user?');">Delete User</button>
-                </form>
+                @{
+                    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    var isOwnProfile = currentUserId == Model.Id.ToString();
+                }
+                @if (User.IsInRole("Admin") || isOwnProfile)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit User</a>
+                }
+                @if (User.IsInRole("Admin"))
+                {
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="character-delete-form" data-delete-form data-delete-target=".character-detail-shell">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this user?');">Delete User</button>
+                    </form>
+                }
                 <a asp-action="Index" class="btn-outline-gold">Back to Users</a>
             </div>
         </article>

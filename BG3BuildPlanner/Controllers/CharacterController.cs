@@ -5,9 +5,11 @@ using BG3BuildPlanner.Data;
 using BG3BuildPlanner.Models.Character;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BG3BuildPlanner.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CharacterController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -17,6 +19,7 @@ namespace BG3BuildPlanner.Controllers
             _dbContext = dbContext;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var characters = _dbContext.Characters
@@ -28,6 +31,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Search(int? id, string? term)
         {
             var query = _dbContext.Characters
@@ -59,6 +63,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Autocomplete(string? term)
         {
             var query = _dbContext.Characters
@@ -83,6 +88,7 @@ namespace BG3BuildPlanner.Controllers
             return Json(results);
         }
 
+        [AllowAnonymous]
         public IActionResult Details(int? id)
         {
             if (id == null)

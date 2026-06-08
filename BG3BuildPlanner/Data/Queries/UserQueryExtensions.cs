@@ -9,13 +9,13 @@ public static class UserQueryExtensions
     /// <summary>
     /// Filters users that are not soft-deleted.
     /// </summary>
-    public static IQueryable<User> Active(this IQueryable<User> users)
+    public static IQueryable<AppUser> Active(this IQueryable<AppUser> users)
         => users.Where(u => u.DeletedAt == null);
 
     /// <summary>
     /// Full-text-ish username search using SQL LIKE when supported.
     /// </summary>
-    public static IQueryable<User> SearchUsername(this IQueryable<User> users, string? query)
+    public static IQueryable<AppUser> SearchUsername(this IQueryable<AppUser> users, string? query)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -23,6 +23,6 @@ public static class UserQueryExtensions
         }
 
         var q = query.Trim();
-        return users.Where(u => u.Username != null && EF.Functions.Like(u.Username, $"%{q}%"));
+        return users.Where(u => u.UserName != null && EF.Functions.Like(u.UserName, $"%{q}%"));
     }
 }

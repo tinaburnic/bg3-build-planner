@@ -9,8 +9,8 @@ namespace BG3BuildPlanner.Data.Mock
         private readonly List<Build> _builds;
         private int _nextId;
         private readonly Dictionary<int, Character> _charactersById;
-        private readonly User _defaultUser;
-        private readonly User _defaultRater;
+        private readonly AppUser _defaultUser;
+        private readonly AppUser _defaultRater;
 		private sealed record RatingSeed(int Score, string Comment, DateTime CreatedAt);
 
         public BuildMockRepository()
@@ -30,14 +30,14 @@ namespace BG3BuildPlanner.Data.Mock
                     CreatedAt = c.CreatedAt
                 });
 
-            _defaultUser = new User
+            _defaultUser = new AppUser
             {
                 Username = "demo",
                 Email = "demo@example.com",
                 PasswordHash = "demo"
             };
 
-            _defaultRater = new User
+            _defaultRater = new AppUser
             {
                 Username = "rater",
                 Email = "rater@example.com",

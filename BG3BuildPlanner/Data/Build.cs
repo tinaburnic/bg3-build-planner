@@ -17,7 +17,7 @@ namespace BG3BuildPlanner.Data
 
 		[ForeignKey(nameof(User))]
 		public int UserId { get; set; }
-		public required virtual User User { get; set; }
+		public required virtual AppUser User { get; set; }
 
 		[ForeignKey(nameof(Character))]
 		public int CharacterId { get; set; }

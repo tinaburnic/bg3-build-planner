@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using BG3BuildPlanner.Data;
 using BG3BuildPlanner.Models.Item;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace BG3BuildPlanner.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ItemController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -16,6 +18,7 @@ namespace BG3BuildPlanner.Controllers
             _dbContext = dbContext;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var items = _dbContext.Items
@@ -25,6 +28,7 @@ namespace BG3BuildPlanner.Controllers
             return View(items);
         }
 
+        [AllowAnonymous]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -44,12 +48,14 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View(new ItemCreateModel());
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ItemCreateModel model)
         {
@@ -73,6 +79,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -99,6 +106,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id)
         {
@@ -131,6 +139,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
@@ -147,6 +156,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Search(int? id, string? term)
         {
             var query = _dbContext.Items.AsQueryable();
@@ -177,6 +187,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Autocomplete(string? term)
         {
             var query = _dbContext.Items.AsQueryable();

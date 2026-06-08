@@ -48,11 +48,14 @@
             </dl>
 
             <div class="skill-detail-actions">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Item</a>
-                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="skill-delete-form" data-delete-form>
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this item?');">Delete Item</button>
-                </form>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Item</a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="skill-delete-form" data-delete-form>
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-outline-gold" onclick="return confirm('Delete this item?');">Delete Item</button>
+                    </form>
+                }
                 <a asp-action="Index" class="btn-outline-gold">Back to Items</a>
             </div>
         </article>

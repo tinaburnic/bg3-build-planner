@@ -25,7 +25,10 @@
         Browse equipment across tiers and compare their combat potential at a glance.
     </p>
     <div class="skill-index-actions">
-        <a asp-action="Create" class="btn-gold">Create New Item</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn-gold">Create New Item</a>
+        }
     </div>
 
     <div class="skill-search" aria-label="Search items">

@@ -26,7 +26,10 @@
     </p>
 
     <div class="build-index-actions">
-        <a asp-action="Create" class="btn-gold">Create New Build</a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-action="Create" class="btn-gold">Create New Build</a>
+        }
     </div>
 
     <div class="build-search" aria-label="Search builds">

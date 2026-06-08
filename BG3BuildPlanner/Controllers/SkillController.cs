@@ -6,9 +6,11 @@ using BG3BuildPlanner.Data.Queries;
 using BG3BuildPlanner.Models.Skill;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BG3BuildPlanner.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class SkillController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -18,6 +20,7 @@ namespace BG3BuildPlanner.Controllers
             _dbContext = dbContext;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var skills = _dbContext.Skills
@@ -29,6 +32,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Search(int? id, string? term)
         {
             var query = _dbContext.Skills.Active();
@@ -58,6 +62,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Autocomplete(string? term)
         {
             var query = _dbContext.Skills.Active();
@@ -81,6 +86,7 @@ namespace BG3BuildPlanner.Controllers
             return Json(results);
         }
 
+        [AllowAnonymous]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -101,12 +107,14 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View(new SkillCreateModel { RequiredLevel = 1 });
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(SkillCreateModel model)
         {
@@ -131,6 +139,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -159,6 +168,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id)
         {
@@ -193,6 +203,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {

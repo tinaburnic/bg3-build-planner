@@ -25,7 +25,10 @@
         Browse each skill and explore tactical breakdowns. Discover interactions and build synergies.
     </p>
     <div class="skill-index-actions">
-        <a asp-action="Create" class="btn-gold">Create New Skill</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn-gold">Create New Skill</a>
+        }
     </div>
 
     <div class="skill-search" aria-label="Search skills">

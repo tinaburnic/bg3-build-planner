@@ -4,34 +4,41 @@ using System.Threading.Tasks;
 using BG3BuildPlanner.Data;
 using BG3BuildPlanner.Data.Queries;
 using BG3BuildPlanner.Models.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace BG3BuildPlanner.Controllers
 {
     [Route("users")]
+    [Authorize]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IPasswordHasher<AppUser> _passwordHasher;
 
-        public UsersController(ApplicationDbContext dbContext)
+        public UsersController(ApplicationDbContext dbContext, IPasswordHasher<AppUser> passwordHasher)
         {
             _dbContext = dbContext;
+            _passwordHasher = passwordHasher;
         }
 
         [HttpGet("")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var users = _dbContext.Users
                 .Active()
                 .Include(u => u.Builds)
-                .OrderBy(u => u.Username)
+                .OrderBy(u => u.UserName)
                 .ToList();
 
             return View(users);
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -54,6 +61,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet("search")]
+        [AllowAnonymous]
         public IActionResult Search(int? id, string? term)
         {
             var query = _dbContext.Users
@@ -71,7 +79,7 @@ namespace BG3BuildPlanner.Controllers
             }
 
             var results = query
-                .OrderBy(u => u.Username)
+                .OrderBy(u => u.UserName)
                 .AsEnumerable()
                 .Select(u => new
                 {
@@ -94,27 +102,35 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View(new UserCreateModel());
         }
 
         [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(UserCreateModel model)
         {
             if (!ModelState.IsValid)
             {
+                model.PasswordHash = string.Empty;
                 return View(model);
             }
 
-            var user = new User
+            var user = new AppUser
             {
                 Username = model.Username,
                 Email = model.Email,
-                PasswordHash = model.PasswordHash,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                SecurityStamp = Guid.NewGuid().ToString(),
+                NormalizedUserName = model.Username.ToUpperInvariant(),
+                NormalizedEmail = model.Email.ToUpperInvariant()
             };
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.PasswordHash);
 
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
@@ -123,6 +139,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet("edit/{id:int}")]
+        [Authorize]
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -138,20 +155,28 @@ namespace BG3BuildPlanner.Controllers
                 return NotFound();
             }
 
+            // Check ownership for non-admins
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!User.IsInRole("Admin") && currentUserId != user.Id.ToString())
+            {
+                return Forbid();
+            }
+
             var model = new UserEditModel
             {
                 Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                PasswordHash = user.PasswordHash
+                Username = user.Username ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                PasswordHash = string.Empty
             };
 
             return View(model);
         }
 
         [HttpPost("edit/{id:int}")]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, UserEditModel model)
         {
             var user = await _dbContext.Users
                 .Active()
@@ -161,27 +186,40 @@ namespace BG3BuildPlanner.Controllers
                 return NotFound();
             }
 
-            if (await TryUpdateModelAsync(user, "",
-                u => u.Username,
-                u => u.Email,
-                u => u.PasswordHash))
+            // Check ownership for non-admins
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!User.IsInRole("Admin") && currentUserId != user.Id.ToString())
             {
-                await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Details), new { id = user.Id });
+                return Forbid();
             }
 
-            var model = new UserEditModel
+            if (!ModelState.IsValid)
             {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                PasswordHash = user.PasswordHash
-            };
+                model.Id = user.Id;
+                model.Username = user.Username ?? string.Empty;
+                model.Email = user.Email ?? string.Empty;
+                model.PasswordHash = string.Empty;
+                return View(model);
+            }
 
-            return View(model);
+            var username = model.Username ?? string.Empty;
+            var email = model.Email ?? string.Empty;
+            var password = model.PasswordHash ?? string.Empty;
+
+            user.Username = username;
+            user.Email = email;
+            user.NormalizedUserName = username.ToUpperInvariant();
+            user.NormalizedEmail = email.ToUpperInvariant();
+            user.PasswordHash = _passwordHasher.HashPassword(user, password);
+            user.SecurityStamp = Guid.NewGuid().ToString();
+            user.ConcurrencyStamp = Guid.NewGuid().ToString();
+
+            await _dbContext.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id = user.Id });
         }
 
         [HttpPost("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
@@ -200,6 +238,7 @@ namespace BG3BuildPlanner.Controllers
         }
 
         [HttpGet("autocomplete")]
+        [AllowAnonymous]
         public IActionResult Autocomplete(string? term)
         {
             var query = _dbContext.Users
@@ -212,7 +251,7 @@ namespace BG3BuildPlanner.Controllers
             }
 
             var results = query
-                .OrderBy(u => u.Username)
+                .OrderBy(u => u.UserName)
                 .Select(u => new
                 {
                     Id = u.Id,
