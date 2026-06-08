@@ -17,10 +17,32 @@ builder.Services.AddDefaultIdentity<AppUser>(options =>
 })
     .AddRoles<IdentityRole<int>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+var hasGoogleCredentials =
+    !string.IsNullOrWhiteSpace(googleClientId) &&
+    !string.IsNullOrWhiteSpace(googleClientSecret);
+
+if (hasGoogleCredentials)
+{
+    builder.Services.AddAuthentication()
+        .AddGoogle(options =>
+        {
+            options.ClientId = googleClientId!;
+            options.ClientSecret = googleClientSecret!;
+        });
+}
+
 builder.Services.AddSingleton<IEmailSender, AppNoOpEmailSender>();
 
 
 var app = builder.Build();
+
+if (!hasGoogleCredentials)
+{
+    app.Logger.LogWarning("Google authentication is not enabled. Set Authentication:Google:ClientId and Authentication:Google:ClientSecret to enable external Google login.");
+}
 
 // Seed the database
 using (var scope = app.Services.CreateScope())
