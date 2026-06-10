@@ -56,7 +56,7 @@
                     <dd>
                         @if (Model.User != null)
                         {
-                            <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.User.Id">@creatorName</a>
+                            <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.User.Id" class="creator-link">@creatorName</a>
                         }
                         else
                         {
@@ -93,20 +93,46 @@
 
     <div class="build-sub-section">
         <h3>Skills</h3>
-        <ul>
+        <ul class="skill-list">
         @foreach (var skill in Model.Skills)
         {
-            <li>@skill.Name (Level @skill.RequiredLevel)</li>
+            <li class="skill-item">
+                <figure class="skill-thumbnail-wrapper">
+                    <img src="@Url.Content(skill.ImageUrl)" alt="@skill.Name" class="skill-thumbnail" />
+                </figure>
+                <div class="skill-info">
+                    <a asp-controller="Skill" asp-action="Details" asp-route-id="@skill.Id" class="skill-name-link">@skill.Name</a>
+                    <span class="skill-level">Level @skill.RequiredLevel</span>
+                </div>
+            </li>
         }
         </ul>
     </div>
 
     <div class="build-sub-section">
         <h3>Items</h3>
-        <ul>
+        <ul class="item-list">
         @foreach (var item in Model.Items)
         {
-            <li>@item.Name (@item.Type, @item.Rarity, Power @item.Power)</li>
+            var typeSymbol = item.Type switch
+            {
+                ItemType.Weapon => "⚔️",
+                ItemType.Armor => "🛡️",
+                ItemType.Accessory => "💍",
+                _ => "•"
+            };
+            var rarityClass = $"item-rarity-{item.Rarity.ToLowerInvariant().Replace(" ", "-")}";
+
+            <li class="item-item">
+                <div class="item-header">
+                    <a asp-controller="Item" asp-action="Details" asp-route-id="@item.Id" class="item-name-link">@item.Name</a>
+                </div>
+                <div class="item-meta">
+                    <span class="item-type-badge" title="@item.Type">@typeSymbol @item.Type</span>
+                    <span class="item-rarity-badge @rarityClass">@item.Rarity</span>
+                    <span class="item-power">Power @item.Power</span>
+                </div>
+            </li>
         }
         </ul>
     </div>
@@ -146,3 +172,171 @@
         }
     </div>
 </section>
+
+<style>
+    .skill-list {
+        padding: 0;
+        margin: 0;
+    }
+
+    .skill-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        list-style: none;
+        margin-bottom: 0.75rem;
+    }
+
+    .skill-thumbnail-wrapper {
+        margin: 0;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .skill-thumbnail {
+        display: block;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border: 1px solid rgba(240, 225, 180, 0.3);
+        border-radius: 4px;
+    }
+
+    .skill-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex-grow: 1;
+    }
+
+    .skill-name-link {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .skill-name-link:hover {
+        color: #f0e1b4;
+    }
+
+    .skill-level {
+        font-size: 0.875rem;
+        color: rgba(240, 225, 180, 0.8);
+    }
+
+    .item-list {
+        padding: 0;
+        margin: 0;
+    }
+
+    .item-item {
+        list-style: none;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border: 1px solid rgba(240, 225, 180, 0.2);
+        border-radius: 4px;
+        background: rgba(240, 225, 180, 0.05);
+    }
+
+    .item-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .item-name-link {
+        color: #f0e1b4;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .item-name-link:hover {
+        color: #fdf4d9;
+    }
+
+    .item-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        font-size: 0.875rem;
+    }
+
+    .item-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        background: rgba(240, 225, 180, 0.15);
+        border: 1px solid rgba(240, 225, 180, 0.3);
+        border-radius: 3px;
+        font-weight: 600;
+    }
+
+    .item-rarity-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 600;
+        border: 1px solid;
+    }
+
+    /* Rarity gradients - from subtle to vibrant gold */
+    .item-rarity-common {
+        background: linear-gradient(135deg, rgba(200, 180, 100, 0.3), rgba(200, 180, 100, 0.2));
+        color: rgba(200, 180, 100, 0.9);
+        border-color: rgba(200, 180, 100, 0.4);
+    }
+
+    .item-rarity-uncommon {
+        background: linear-gradient(135deg, rgba(220, 195, 110, 0.4), rgba(220, 195, 110, 0.3));
+        color: rgba(220, 195, 110, 0.95);
+        border-color: rgba(220, 195, 110, 0.5);
+    }
+
+    .item-rarity-rare {
+        background: linear-gradient(135deg, rgba(240, 215, 120, 0.5), rgba(240, 215, 120, 0.4));
+        color: rgba(240, 215, 120, 1);
+        border-color: rgba(240, 215, 120, 0.6);
+    }
+
+    .item-rarity-very-rare {
+        background: linear-gradient(135deg, rgba(240, 225, 130, 0.6), rgba(240, 225, 130, 0.5));
+        color: #f0e182;
+        border-color: rgba(240, 225, 130, 0.7);
+    }
+
+    .item-rarity-legendary {
+        background: linear-gradient(135deg, #f0e1b4, rgba(240, 225, 180, 0.8));
+        color: #ffffff;
+        border-color: #f0e1b4;
+    }
+
+    .item-rarity-artifact {
+        background: linear-gradient(135deg, #fdf4d9, #f0e1b4);
+        color: #000000;
+        border-color: #fdf4d9;
+        font-weight: 700;
+    }
+
+    .item-power {
+        font-size: 0.8rem;
+        color: rgba(240, 225, 180, 0.7);
+        font-style: italic;
+    }
+
+    .creator-link {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .creator-link:hover {
+        color: #f0e1b4;
+    }
+
+</style>

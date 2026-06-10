@@ -100,6 +100,9 @@ namespace BG3BuildPlanner.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
 
@@ -282,6 +285,43 @@ namespace BG3BuildPlanner.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("BG3BuildPlanner.Data.UserProfileFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RelativePath")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProfileFiles", (string)null);
                 });
 
             modelBuilder.Entity("BuildItem", b =>
@@ -493,6 +533,17 @@ namespace BG3BuildPlanner.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BG3BuildPlanner.Data.UserProfileFile", b =>
+                {
+                    b.HasOne("BG3BuildPlanner.Data.AppUser", "User")
+                        .WithMany("ProfileFiles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BuildItem", b =>
                 {
                     b.HasOne("BG3BuildPlanner.Data.Build", null)
@@ -577,6 +628,8 @@ namespace BG3BuildPlanner.Migrations
             modelBuilder.Entity("BG3BuildPlanner.Data.AppUser", b =>
                 {
                     b.Navigation("Builds");
+
+                    b.Navigation("ProfileFiles");
 
                     b.Navigation("Ratings");
                 });

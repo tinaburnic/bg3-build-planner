@@ -4,13 +4,20 @@
 
 @{
     ViewData["Title"] = Model.Username;
-    var portraitUrl = Url.Content("~/images/characters/placeholder.svg");
+    var normalizedProfileImagePath = string.IsNullOrWhiteSpace(Model.ProfileImageUrl)
+        ? null
+        : Model.ProfileImageUrl.TrimStart('~', '/', '\\');
+    var portraitUrl = string.IsNullOrWhiteSpace(normalizedProfileImagePath)
+        ? Url.Content("~/images/characters/placeholder.svg")
+        : Url.Content($"~/{normalizedProfileImagePath}");
     var activeBuilds = Model.Builds?.Where(b => b.DeletedAt == null).ToList() ?? new List<BG3BuildPlanner.Data.Build>();
     var buildCount = activeBuilds.Count;
     var ratingCount = Model.Ratings?.Count(r => r.Build != null && r.Build.DeletedAt == null) ?? 0;
     var createdAt = Model.CreatedAt == default
         ? "Unknown"
         : Model.CreatedAt.ToString("MMMM dd, yyyy");
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isOwnProfile = User.Identity?.IsAuthenticated == true && currentUserId == Model.Id.ToString();
 }
 
 <section class="character-detail-shell reveal-up" aria-label="User Detail" data-remove-target>
@@ -23,8 +30,14 @@
     <h1 class="character-detail-title">@Model.Username</h1>
 
     <div class="character-detail-layout">
-        <figure class="character-portrait-panel">
-            <img src="@portraitUrl" alt="Portrait for @Model.Username" class="character-portrait-image" />
+        <figure class="character-portrait-panel profile-image-dropzone-host">
+            <img id="user-profile-image" src="@portraitUrl" alt="Portrait for @Model.Username" class="character-portrait-image" />
+            @if (isOwnProfile)
+            {
+                <form id="profile-dropzone" class="dropzone profile-dropzone-overlay" action="/api/profile/files" method="post" enctype="multipart/form-data">
+                    <div class="dz-message">Drop an image here or click to upload.</div>
+                </form>
+            }
         </figure>
 
         <article class="character-detail-card" aria-label="User Summary">
@@ -53,10 +66,6 @@
             </dl>
 
             <div class="character-detail-actions">
-                @{
-                    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    var isOwnProfile = currentUserId == Model.Id.ToString();
-                }
                 @if (User.IsInRole("Admin") || isOwnProfile)
                 {
                     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit User</a>
@@ -73,6 +82,18 @@
         </article>
     </div>
 
+    @if (isOwnProfile)
+    {
+        <div class="build-sub-section" id="profile-file-upload-section">
+            <h3>Profile Image</h3>
+            <div class="mt-3">
+                <h4 class="h6">Uploaded Files</h4>
+                <p id="profile-file-list-empty" class="mb-2">Loading files...</p>
+                <ul id="profile-file-list" class="mb-0"></ul>
+            </div>
+        </div>
+    }
+
     <div class="build-sub-section">
         <h3>Builds</h3>
         @if (buildCount == 0)
@@ -81,11 +102,22 @@
         }
         else
         {
-            <ul>
+            <ul class="user-build-list">
             @foreach (var build in activeBuilds.OrderBy(b => b.Title))
             {
-                <li>
-                    <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id">@build.Title</a>
+                var characterName = string.IsNullOrWhiteSpace(build.Character?.Name)
+                    ? "Unknown character"
+                    : build.Character.Name;
+
+                <li class="user-build-card">
+                    <div class="user-build-title-row">
+                        <a asp-controller="Build" asp-action="Details" asp-route-id="@build.Id" class="user-build-link">@build.Title</a>
+                    </div>
+                    <div class="user-build-meta">
+                        <span class="user-build-meta-item">@build.Difficulty</span>
+                        <span class="user-build-meta-divider" aria-hidden="true">•</span>
+                        <span class="user-build-meta-item">@characterName</span>
+                    </div>
                 </li>
             }
             </ul>
@@ -100,15 +132,328 @@
         }
         else
         {
-            <ul>
-            @foreach (var rating in Model.Ratings.Where(r => r.Build != null && r.Build.DeletedAt == null).OrderByDescending(r => r.CreatedAt))
+            <ul class="user-rating-list">
+            @foreach (var rating in (Model.Ratings ?? Enumerable.Empty<BG3BuildPlanner.Data.Rating>()).Where(r => r.Build != null && r.Build.DeletedAt == null).OrderByDescending(r => r.CreatedAt))
             {
                 var buildTitle = rating.Build?.Title ?? "Unknown build";
-                <li>
-                    <strong>@rating.Score/5</strong> - @rating.Comment (on @buildTitle)
+
+                <li class="user-rating-card">
+                    <div class="user-rating-build">
+                        @if (rating.Build != null)
+                        {
+                            <a asp-controller="Build" asp-action="Details" asp-route-id="@rating.Build.Id" class="user-rating-build-link">@buildTitle</a>
+                        }
+                        else
+                        {
+                            @buildTitle
+                        }
+                    </div>
+                    <div class="user-rating-body">
+                        <span class="user-rating-stars" aria-label="@rating.Score out of 5">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                var starClass = i <= rating.Score
+                                    ? "user-rating-star user-rating-star--filled"
+                                    : "user-rating-star";
+                                <span class="@starClass">&#9733;</span>
+                            }
+                        </span>
+                        <span class="user-rating-comment">@rating.Comment</span>
+                    </div>
                 </li>
             }
             </ul>
         }
     </div>
 </section>
+
+<style>
+    .user-build-list {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .user-build-card {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid #d4af37;
+        background: rgba(212, 175, 55, 0.05);
+        list-style: none;
+    }
+
+    .user-build-title-row {
+        padding-bottom: 0.35rem;
+    }
+
+    .user-build-link {
+        color: #f0e1b4;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.98rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .user-build-link:hover {
+        color: #fdf4d9;
+    }
+
+    .user-build-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+        color: rgba(240, 225, 180, 0.85);
+        font-size: 0.92rem;
+    }
+
+    .user-build-meta-item {
+        font-weight: 600;
+    }
+
+    .user-build-meta-divider {
+        color: rgba(240, 225, 180, 0.45);
+    }
+
+    .user-rating-list {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .user-rating-card {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid #d4af37;
+        background: rgba(212, 175, 55, 0.05);
+        list-style: none;
+    }
+
+    .user-rating-build {
+        padding-bottom: 0.5rem;
+    }
+
+    .user-rating-build-link {
+        color: #f0e1b4;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .user-rating-build-link:hover {
+        color: #fdf4d9;
+    }
+
+    .user-rating-body {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .user-rating-stars {
+        display: inline-flex;
+        gap: 0.25rem;
+        flex-shrink: 0;
+    }
+
+    .user-rating-star {
+        color: rgba(240, 225, 180, 0.4);
+        font-size: 1.1rem;
+    }
+
+    .user-rating-star--filled {
+        color: #f0e1b4;
+    }
+
+    .user-rating-comment {
+        color: rgba(240, 225, 180, 0.9);
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+</style>
+
+@if (isOwnProfile)
+{
+    @section Scripts {
+        <link rel="stylesheet" href="https://unpkg.com/dropzone@6.0.0-beta.2/dist/dropzone.css" />
+        <style>
+            .profile-image-dropzone-host {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .profile-dropzone-overlay.dropzone {
+                position: absolute;
+                inset: 0;
+                margin: 0;
+                border: 0;
+                background: rgba(0, 0, 0, 0.35);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                cursor: pointer;
+            }
+
+            .profile-image-dropzone-host:hover .profile-dropzone-overlay.dropzone,
+            .profile-dropzone-overlay.dropzone.dz-drag-hover {
+                opacity: 1;
+            }
+
+            .profile-dropzone-overlay .dz-message {
+                margin: 0;
+                color: #f0e1b4;
+                font-weight: 700;
+                text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+                padding: 0 1rem;
+            }
+        </style>
+        <script src="https://unpkg.com/dropzone@6.0.0-beta.2/dist/dropzone-min.js"></script>
+        <script>
+            (function () {
+                Dropzone.autoDiscover = false;
+
+                const dropzoneElement = document.getElementById("profile-dropzone");
+                const listElement = document.getElementById("profile-file-list");
+                const emptyElement = document.getElementById("profile-file-list-empty");
+                const profileImageElement = document.getElementById("user-profile-image");
+                const fallbackImageUrl = "@Url.Content("~/images/characters/placeholder.svg")";
+
+                const formatSize = (sizeBytes) => {
+                    if (!Number.isFinite(sizeBytes) || sizeBytes < 1024) {
+                        return `${sizeBytes || 0} B`;
+                    }
+
+                    const kb = sizeBytes / 1024;
+                    if (kb < 1024) {
+                        return `${kb.toFixed(1)} KB`;
+                    }
+
+                    const mb = kb / 1024;
+                    return `${mb.toFixed(1)} MB`;
+                };
+
+                const imageUrlFromRelativePath = (relativePath) => {
+                    if (!relativePath) {
+                        return fallbackImageUrl;
+                    }
+
+                    return `/${relativePath.replace(/^[/\\]+/, "")}`;
+                };
+
+                const renderFiles = (files) => {
+                    listElement.innerHTML = "";
+
+                    if (!Array.isArray(files) || files.length === 0) {
+                        emptyElement.textContent = "No files uploaded yet.";
+                        return;
+                    }
+
+                    emptyElement.textContent = "";
+
+                    files.forEach((file) => {
+                        const listItem = document.createElement("li");
+                        const uploaded = new Date(file.uploadedAt).toLocaleString();
+
+                        const summary = document.createElement("span");
+                        summary.textContent = `${file.originalFileName} (${formatSize(file.fileSize)}) uploaded ${uploaded}`;
+                        listItem.appendChild(summary);
+
+                        if (file.isCurrentProfileImage) {
+                            const marker = document.createElement("strong");
+                            marker.textContent = " [current]";
+                            listItem.appendChild(marker);
+                        }
+                        else {
+                            const setCurrentButton = document.createElement("button");
+                            setCurrentButton.type = "button";
+                            setCurrentButton.className = "btn-outline-gold ms-2";
+                            setCurrentButton.textContent = "Set as current";
+                            setCurrentButton.addEventListener("click", async () => {
+                                const response = await fetch(`/api/profile/files/${file.id}/current`, {
+                                    method: "PUT",
+                                    credentials: "same-origin"
+                                });
+
+                                if (response.ok) {
+                                    profileImageElement.src = imageUrlFromRelativePath(file.relativePath);
+                                    await loadFiles();
+                                }
+                            });
+                            listItem.appendChild(setCurrentButton);
+                        }
+
+                        const deleteButton = document.createElement("button");
+                        deleteButton.type = "button";
+                        deleteButton.className = "btn-outline-gold ms-2";
+                        deleteButton.textContent = "Delete";
+                        deleteButton.addEventListener("click", async () => {
+                            const response = await fetch(`/api/profile/files/${file.id}`, {
+                                method: "DELETE",
+                                credentials: "same-origin"
+                            });
+
+                            if (response.ok) {
+                                profileImageElement.src = fallbackImageUrl;
+                                await loadFiles();
+                            }
+                        });
+                        listItem.appendChild(deleteButton);
+
+                        listElement.appendChild(listItem);
+                    });
+                };
+
+                const loadFiles = async () => {
+                    const response = await fetch("/api/profile/files", {
+                        method: "GET",
+                        credentials: "same-origin"
+                    });
+
+                    if (!response.ok) {
+                        emptyElement.textContent = "Unable to load files.";
+                        return;
+                    }
+
+                    const files = await response.json();
+                    renderFiles(files);
+
+                    const current = Array.isArray(files)
+                        ? files.find((file) => file.isCurrentProfileImage)
+                        : null;
+
+                    profileImageElement.src = current
+                        ? imageUrlFromRelativePath(current.relativePath)
+                        : fallbackImageUrl;
+                };
+
+                new Dropzone(dropzoneElement, {
+                    paramName: "file",
+                    maxFiles: 1,
+                    acceptedFiles: "image/*",
+                    withCredentials: true,
+                    init: function () {
+                        this.on("success", async (uploadedFile, response) => {
+                            this.removeAllFiles(true);
+                            if (response && response.relativePath) {
+                                profileImageElement.src = imageUrlFromRelativePath(response.relativePath);
+                            }
+                            await loadFiles();
+                        });
+
+                        this.on("error", (uploadedFile, message) => {
+                            console.error("Upload failed", message);
+                        });
+                    }
+                });
+
+                loadFiles();
+            })();
+        </script>
+    }
+}

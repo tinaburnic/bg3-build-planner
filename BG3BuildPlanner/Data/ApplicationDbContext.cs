@@ -19,6 +19,7 @@ namespace BG3BuildPlanner.Data
 		public DbSet<Item> Items { get; set; }
 		public DbSet<Rating> Ratings { get; set; }
 		public DbSet<AbilityScore> AbilityScores { get; set; }
+		public DbSet<UserProfileFile> UserProfileFiles { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -28,6 +29,18 @@ namespace BG3BuildPlanner.Data
 			{
 				entity.ToTable("Users");
 				entity.Property(user => user.UserName).HasColumnName("Username");
+			});
+
+			builder.Entity<UserProfileFile>(entity =>
+			{
+				entity.ToTable("UserProfileFiles");
+				entity.Property(file => file.OriginalFileName).HasMaxLength(260);
+				entity.Property(file => file.StoredFileName).HasMaxLength(260);
+				entity.Property(file => file.RelativePath).HasMaxLength(512);
+				entity.HasOne(file => file.User)
+					.WithMany(user => user.ProfileFiles)
+					.HasForeignKey(file => file.UserId)
+					.OnDelete(DeleteBehavior.Cascade);
 			});
 		}
 	}

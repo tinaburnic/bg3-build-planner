@@ -10,6 +10,7 @@ namespace BG3BuildPlanner.Data
     {
         public DateTime CreatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public string? ProfileImageUrl { get; set; }
 
         [NotMapped]
         public string Username
@@ -21,6 +22,7 @@ namespace BG3BuildPlanner.Data
         // Navigation property
         public virtual ICollection<Build> Builds { get; set; } = new List<Build>();
         public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+        public virtual ICollection<UserProfileFile> ProfileFiles { get; set; } = new List<UserProfileFile>();
     }
 }
 

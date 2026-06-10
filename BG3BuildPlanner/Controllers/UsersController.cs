@@ -49,6 +49,7 @@ namespace BG3BuildPlanner.Controllers
             var user = _dbContext.Users
                 .Active()
                 .Include(u => u.Builds)
+                    .ThenInclude(b => b.Character)
                 .Include(u => u.Ratings)
                     .ThenInclude(r => r.Build)
                 .FirstOrDefault(u => u.Id == id.Value);
