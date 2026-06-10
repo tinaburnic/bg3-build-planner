@@ -15,6 +15,15 @@
         Difficulty.Tactician => "Tactician_Difficulty.jpg",
         _ => "Balanced_Difficulty.jpg"
     };
+    var currentUserIdValue = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var currentUserId = int.TryParse(currentUserIdValue, out var parsedCurrentUserId)
+        ? parsedCurrentUserId
+        : (int?)null;
+    var isOwner = currentUserId.HasValue && currentUserId.Value == Model.UserId;
+    var currentUserRating = currentUserId.HasValue
+        ? Model.Ratings.FirstOrDefault(r => r.UserId == currentUserId.Value)
+        : null;
+    var canRateBuild = User.Identity?.IsAuthenticated == true && !isOwner;
 }
 
 <section class="build-detail-shell reveal-up fade-remove-target" aria-label="Build Details" data-remove-target>
@@ -70,12 +79,7 @@
                 </div>
             </dl>
             <div class="build-detail-actions">
-                @{
-                    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    var isOwner = currentUserId == Model.UserId.ToString();
-                    var canEditBuild = User.IsInRole("Admin") || isOwner;
-                }
-                @if (canEditBuild)
+                @if (User.IsInRole("Admin") || isOwner)
                 {
                     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-gold">Edit Build</a>
                 }
@@ -139,6 +143,73 @@
 
     <div class="build-sub-section">
         <h3>Ratings</h3>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="build-rating-editor">
+                @if (currentUserRating != null)
+                {
+                    <h4>Your Rating</h4>
+                    <form id="rating-form" class="rating-form" data-mode="edit" data-rating-id="@currentUserRating.Id" data-build-id="@Model.Id">
+                        <div class="rating-form-fields">
+                            <div class="rating-form-field">
+                                <label for="rating-score">Score</label>
+                                <select id="rating-score" name="score" class="form-select">
+                                    @for (var i = 1; i <= 5; i++)
+                                    {
+                                        if (currentUserRating.Score == i)
+                                        {
+                                            <option value="@i" selected="selected">@i</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="rating-form-field rating-form-field--full">
+                                <label for="rating-comment">Comment</label>
+                                <textarea id="rating-comment" name="comment" class="form-control" rows="3">@currentUserRating.Comment</textarea>
+                            </div>
+                        </div>
+                        <div class="build-detail-actions rating-form-actions">
+                            <button type="submit" class="btn-gold">Save Rating</button>
+                            <button type="button" class="btn-outline-gold" id="rating-delete-button" data-rating-id="@currentUserRating.Id">Delete Rating</button>
+                        </div>
+                        <p class="rating-form-status" id="rating-form-status" aria-live="polite"></p>
+                    </form>
+                }
+                else if (canRateBuild)
+                {
+                    <h4>Rate This Build</h4>
+                    <form id="rating-form" class="rating-form" data-mode="create" data-build-id="@Model.Id">
+                        <div class="rating-form-fields">
+                            <div class="rating-form-field">
+                                <label for="rating-score">Score</label>
+                                <select id="rating-score" name="score" class="form-select">
+                                    @for (var i = 5; i >= 1; i--)
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="rating-form-field rating-form-field--full">
+                                <label for="rating-comment">Comment</label>
+                                <textarea id="rating-comment" name="comment" class="form-control" rows="3" placeholder="Share what worked, what didn’t, or why you rated it this way."></textarea>
+                            </div>
+                        </div>
+                        <div class="build-detail-actions rating-form-actions">
+                            <button type="submit" class="btn-gold">Submit Rating</button>
+                        </div>
+                        <p class="rating-form-status" id="rating-form-status" aria-live="polite"></p>
+                    </form>
+                }
+                else
+                {
+                    <p>You cannot rate your own build.</p>
+                }
+            </div>
+        }
         @if (Model.Ratings.Count == 0)
         {
             <p>No ratings yet.</p>
@@ -339,4 +410,158 @@
         color: #f0e1b4;
     }
 
+    .build-rating-editor {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border: 1px solid rgba(240, 225, 180, 0.18);
+        border-radius: 4px;
+        background: rgba(240, 225, 180, 0.04);
+    }
+
+    .rating-form h4 {
+        margin-bottom: 0.75rem;
+    }
+
+    .rating-form-fields {
+        display: grid;
+        grid-template-columns: minmax(0, 120px) minmax(0, 1fr);
+        gap: 0.85rem;
+        align-items: start;
+    }
+
+    .rating-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .rating-form-field--full {
+        grid-column: 1 / -1;
+    }
+
+    .rating-form label {
+        color: var(--ink-ivory);
+        font-weight: 600;
+    }
+
+    .rating-form .form-control,
+    .rating-form .form-select {
+        background-color: rgba(10, 9, 8, 0.92);
+        color: var(--ink-ivory);
+        border-color: rgba(240, 225, 180, 0.28);
+    }
+
+    .rating-form .form-control:focus,
+    .rating-form .form-select:focus {
+        border-color: rgba(240, 225, 180, 0.6);
+        box-shadow: 0 0 0 0.1rem #000, 0 0 0 0.22rem rgba(216, 179, 106, 0.35);
+    }
+
+    .rating-form-actions {
+        margin-top: 0.9rem;
+    }
+
+    .rating-form-status {
+        margin: 0.65rem 0 0;
+        color: rgba(240, 225, 180, 0.82);
+        min-height: 1.2rem;
+    }
+
 </style>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <script>
+        (function () {
+            const ratingForm = document.getElementById("rating-form");
+            if (!ratingForm) {
+                return;
+            }
+
+            const statusElement = document.getElementById("rating-form-status");
+            const deleteButton = document.getElementById("rating-delete-button");
+            const scoreElement = document.getElementById("rating-score");
+            const commentElement = document.getElementById("rating-comment");
+            const mode = ratingForm.dataset.mode;
+            const buildId = Number(ratingForm.dataset.buildId);
+            const ratingId = Number(ratingForm.dataset.ratingId || 0);
+
+            const setStatus = (message, isError = false) => {
+                if (!statusElement) {
+                    return;
+                }
+
+                statusElement.textContent = message;
+                statusElement.style.color = isError ? "#f4a6a6" : "rgba(240, 225, 180, 0.82)";
+            };
+
+            const readValidationErrors = async (response) => {
+                try {
+                    const data = await response.json();
+                    if (data && data.errors) {
+                        return Object.values(data.errors).flat().join(" ");
+                    }
+                } catch {
+                    return "";
+                }
+
+                return "";
+            };
+
+            ratingForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const payload = {
+                    score: Number(scoreElement.value),
+                    comment: commentElement.value.trim(),
+                    buildId
+                };
+
+                try {
+                    const response = await fetch(mode === "edit" ? `/api/ratings/${ratingId}` : "/api/ratings", {
+                        method: mode === "edit" ? "PUT" : "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "same-origin",
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const validationMessage = await readValidationErrors(response);
+                        setStatus(validationMessage || "Unable to save rating.", true);
+                        return;
+                    }
+
+                    location.reload();
+                } catch {
+                    setStatus("Unable to save rating.", true);
+                }
+            });
+
+            if (deleteButton) {
+                deleteButton.addEventListener("click", async () => {
+                    if (!confirm("Delete your rating?")) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/ratings/${ratingId}`, {
+                            method: "DELETE",
+                            credentials: "same-origin"
+                        });
+
+                        if (!response.ok) {
+                            setStatus("Unable to delete rating.", true);
+                            return;
+                        }
+
+                        location.reload();
+                    } catch {
+                        setStatus("Unable to delete rating.", true);
+                    }
+                });
+            }
+        })();
+    </script>
+}

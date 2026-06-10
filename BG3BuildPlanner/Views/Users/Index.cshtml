@@ -55,10 +55,17 @@
         {
             var activeBuilds = user.Builds?.Where(b => b.DeletedAt == null).ToList() ?? new List<BG3BuildPlanner.Data.Build>();
             var buildCount = activeBuilds.Count;
+            var profileImagePath = string.IsNullOrWhiteSpace(user.ProfileImageUrl)
+                ? null
+                : Url.Content($"~/{user.ProfileImageUrl.TrimStart('~', '/', '\\')}");
 
             <article class="user-card" aria-label="@user.Username profile" data-reveal-item>
                 <a class="user-card-link" asp-action="Details" asp-route-id="@user.Id" aria-label="View @user.Username profile"></a>
                 <header class="user-card-header">
+                    @if (!string.IsNullOrWhiteSpace(profileImagePath))
+                    {
+                        <img src="@profileImagePath" alt="Profile picture for @user.Username" class="user-card-avatar" />
+                    }
                     <h2 class="user-name">@user.Username</h2>
                 </header>
                 <div class="user-card-body">
@@ -88,3 +95,21 @@
 
     <p class="user-empty" data-user-empty hidden>No users match this search.</p>
 </section>
+
+<style>
+    .user-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-card-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(240, 225, 180, 0.35);
+        flex-shrink: 0;
+        background: rgba(0, 0, 0, 0.2);
+    }
+</style>

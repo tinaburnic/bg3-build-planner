@@ -149,37 +149,66 @@ namespace BG3BuildPlanner.Controllers
 
         [HttpGet("create")]
         [Authorize(Roles = "Admin,Builder")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["AllSkills"] = await _dbContext.Skills
+                .Where(s => s.DeletedAt == null)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+            ViewData["AllItems"] = await _dbContext.Items
+                .OrderBy(i => i.Name)
+                .ToListAsync();
+
             return View(new BuildCreateModel());
         }
 
         [HttpPost("create")]
         [Authorize(Roles = "Admin,Builder")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(BuildCreateModel model)
+        public async Task<IActionResult> Create(BuildCreateModel model)
         {
             if (!ModelState.IsValid)
             {
+                ViewData["AllSkills"] = await _dbContext.Skills
+                    .Where(s => s.DeletedAt == null)
+                    .OrderBy(s => s.Name)
+                    .ToListAsync();
+                ViewData["AllItems"] = await _dbContext.Items
+                    .OrderBy(i => i.Name)
+                    .ToListAsync();
                 return View(model);
             }
 
-            var character = _dbContext.Characters
-                .FirstOrDefault(c => c.Id == model.CharacterId && c.DeletedAt == null);
+            var character = await _dbContext.Characters
+                .FirstOrDefaultAsync(c => c.Id == model.CharacterId && c.DeletedAt == null);
             if (character == null)
             {
                 ModelState.AddModelError(nameof(model.CharacterId), "Character not found.");
+                ViewData["AllSkills"] = await _dbContext.Skills
+                    .Where(s => s.DeletedAt == null)
+                    .OrderBy(s => s.Name)
+                    .ToListAsync();
+                ViewData["AllItems"] = await _dbContext.Items
+                    .OrderBy(i => i.Name)
+                    .ToListAsync();
                 return View(model);
             }
 
-            var user = _dbContext.Users
-                .Active()
-                .FirstOrDefault(u => u.Id == model.UserId);
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                ModelState.AddModelError(nameof(model.UserId), "User not found.");
-                return View(model);
+                return Forbid();
             }
+
+            var selectedSkillIds = (model.SkillIds ?? Array.Empty<int>()).Distinct().ToArray();
+            var selectedItemIds = (model.ItemIds ?? Array.Empty<int>()).Distinct().ToArray();
+
+            var selectedSkills = await _dbContext.Skills
+                .Where(s => s.DeletedAt == null && selectedSkillIds.Contains(s.Id))
+                .ToListAsync();
+            var selectedItems = await _dbContext.Items
+                .Where(i => selectedItemIds.Contains(i.Id))
+                .ToListAsync();
 
             var build = new Build
             {
@@ -187,14 +216,24 @@ namespace BG3BuildPlanner.Controllers
                 Description = model.Description,
                 Difficulty = model.Difficulty,
                 CharacterId = model.CharacterId,
-                UserId = model.UserId,
+                UserId = user.Id,
                 CreatedAt = DateTime.UtcNow,
                 Character = character,
                 User = user
             };
 
+            foreach (var skill in selectedSkills)
+            {
+                build.Skills.Add(skill);
+            }
+
+            foreach (var item in selectedItems)
+            {
+                build.Items.Add(item);
+            }
+
             _dbContext.Builds.Add(build);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return RedirectToAction(nameof(Details), new { id = build.Id });
         }
@@ -234,18 +273,21 @@ namespace BG3BuildPlanner.Controllers
                 Description = build.Description,
                 Difficulty = build.Difficulty,
                 CharacterId = build.CharacterId,
-                UserId = build.UserId
+                SkillIds = build.Skills.Select(s => s.Id).ToArray(),
+                ItemIds = build.Items.Select(i => i.Id).ToArray()
             };
 
             ViewData["CharacterName"] = await _dbContext.Characters
                 .Where(c => c.Id == build.CharacterId)
                 .Select(c => c.Name)
                 .FirstOrDefaultAsync();
-            ViewData["UserName"] = await _dbContext.Users
-                .Active()
-                .Where(u => u.Id == build.UserId)
-                .Select(u => u.Username)
-                .FirstOrDefaultAsync();
+            ViewData["AllSkills"] = await _dbContext.Skills
+                .Where(s => s.DeletedAt == null)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+            ViewData["AllItems"] = await _dbContext.Items
+                .OrderBy(i => i.Name)
+                .ToListAsync();
 
             return View(model);
         }
@@ -253,10 +295,17 @@ namespace BG3BuildPlanner.Controllers
         [HttpPost("edit/{id:int}")]
         [Authorize(Roles = "Admin,Builder")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, BuildEditModel model)
         {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
             var build = await _dbContext.Builds
                 .Active()
+                .Include(b => b.Skills)
+                .Include(b => b.Items)
                 .FirstOrDefaultAsync(b => b.Id == id);
             if (build == null)
             {
@@ -273,37 +322,71 @@ namespace BG3BuildPlanner.Controllers
                 }
             }
 
-            if (await TryUpdateModelAsync(build, "",
-                b => b.Title,
-                b => b.Description,
-                b => b.Difficulty,
-                b => b.CharacterId,
-                b => b.UserId))
+            if (!ModelState.IsValid)
             {
-                await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Details), new { id = build.Id });
+                ViewData["CharacterName"] = await _dbContext.Characters
+                    .Where(c => c.Id == model.CharacterId)
+                    .Select(c => c.Name)
+                    .FirstOrDefaultAsync();
+                ViewData["AllSkills"] = await _dbContext.Skills
+                    .Where(s => s.DeletedAt == null)
+                    .OrderBy(s => s.Name)
+                    .ToListAsync();
+                ViewData["AllItems"] = await _dbContext.Items
+                    .OrderBy(i => i.Name)
+                    .ToListAsync();
+                return View(model);
             }
 
-            var model = new BuildEditModel
+            var characterExists = await _dbContext.Characters
+                .AnyAsync(c => c.Id == model.CharacterId && c.DeletedAt == null);
+            if (!characterExists)
             {
-                Id = build.Id,
-                Title = build.Title,
-                Description = build.Description,
-                Difficulty = build.Difficulty,
-                CharacterId = build.CharacterId,
-                UserId = build.UserId
-            };
+                ModelState.AddModelError(nameof(model.CharacterId), "Character not found.");
+                ViewData["CharacterName"] = await _dbContext.Characters
+                    .Where(c => c.Id == model.CharacterId)
+                    .Select(c => c.Name)
+                    .FirstOrDefaultAsync();
+                ViewData["AllSkills"] = await _dbContext.Skills
+                    .Where(s => s.DeletedAt == null)
+                    .OrderBy(s => s.Name)
+                    .ToListAsync();
+                ViewData["AllItems"] = await _dbContext.Items
+                    .OrderBy(i => i.Name)
+                    .ToListAsync();
+                return View(model);
+            }
 
-            ViewData["CharacterName"] = await _dbContext.Characters
-                .Where(c => c.Id == build.CharacterId)
-                .Select(c => c.Name)
-                .FirstOrDefaultAsync();
-            ViewData["UserName"] = await _dbContext.Users
-                .Where(u => u.Id == build.UserId)
-                .Select(u => u.Username)
-                .FirstOrDefaultAsync();
+            var selectedSkillIds = (model.SkillIds ?? Array.Empty<int>()).Distinct().ToArray();
+            var selectedItemIds = (model.ItemIds ?? Array.Empty<int>()).Distinct().ToArray();
 
-            return View(model);
+            var selectedSkills = await _dbContext.Skills
+                .Where(s => s.DeletedAt == null && selectedSkillIds.Contains(s.Id))
+                .ToListAsync();
+            var selectedItems = await _dbContext.Items
+                .Where(i => selectedItemIds.Contains(i.Id))
+                .ToListAsync();
+
+            build.Title = model.Title;
+            build.Description = model.Description;
+            build.Difficulty = model.Difficulty;
+            build.CharacterId = model.CharacterId;
+
+            build.Skills.Clear();
+            foreach (var skill in selectedSkills)
+            {
+                build.Skills.Add(skill);
+            }
+
+            build.Items.Clear();
+            foreach (var item in selectedItems)
+            {
+                build.Items.Add(item);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = build.Id });
         }
 
         [HttpPost("delete/{id:int}")]

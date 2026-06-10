@@ -22,7 +22,7 @@ namespace BG3BuildPlanner.Models.Build
         [Range(1, int.MaxValue)]
         public int CharacterId { get; set; }
 
-        [Range(1, int.MaxValue)]
-        public int UserId { get; set; }
+        public int[] SkillIds { get; set; } = Array.Empty<int>();
+        public int[] ItemIds { get; set; } = Array.Empty<int>();
     }
 }

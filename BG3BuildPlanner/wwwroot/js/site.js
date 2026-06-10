@@ -189,6 +189,14 @@ const renderUserCard = (user) => {
 	const header = document.createElement("header");
 	header.className = "user-card-header";
 
+	if (user.profileImageUrl) {
+		const avatar = document.createElement("img");
+		avatar.className = "user-card-avatar";
+		avatar.alt = `Profile picture for ${user.username}`;
+		avatar.src = `/${String(user.profileImageUrl).replace(/^[/\\]+/, "")}`;
+		header.append(avatar);
+	}
+
 	const name = document.createElement("h2");
 	name.className = "user-name";
 	name.textContent = user.username;

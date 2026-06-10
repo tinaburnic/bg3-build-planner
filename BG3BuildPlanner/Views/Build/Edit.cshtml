@@ -1,8 +1,13 @@
 @model BG3BuildPlanner.Models.Build.BuildEditModel
 @using BG3BuildPlanner.Data
+@using System.Linq
 
 @{
     ViewData["Title"] = "Edit Build";
+    var allSkills = ViewData["AllSkills"] as IEnumerable<BG3BuildPlanner.Data.Skill>
+        ?? Enumerable.Empty<BG3BuildPlanner.Data.Skill>();
+    var allItems = ViewData["AllItems"] as IEnumerable<BG3BuildPlanner.Data.Item>
+        ?? Enumerable.Empty<BG3BuildPlanner.Data.Item>();
 }
 
 <section class="character-create-shell reveal-up" aria-label="Edit Build">
@@ -58,22 +63,27 @@
         </div>
 
         <div class="form-group">
-            @await Html.PartialAsync("_AutocompleteInput", new BG3BuildPlanner.Models.Shared.AutocompleteInputModel
-            {
-                InputId = "build-user",
-                InputName = "BuildUserName",
-                HiddenInputId = "build-user-id",
-                HiddenInputName = "UserId",
-                InitialText = ViewData["UserName"] as string,
-                InitialId = Model.UserId,
-                Label = "Creator",
-                Placeholder = "Start typing a username",
-                EndpointUrl = Url.Action("Autocomplete", "Users") ?? string.Empty,
-                MinLength = 2,
-                Required = true,
-                RequiredMessage = "Select a creator."
-            })
-            <span asp-validation-for="UserId" class="text-danger"></span>
+            <label asp-for="SkillIds" class="form-label">Skills</label>
+            <select asp-for="SkillIds" class="form-control build-multi-select-native" multiple size="8" id="build-skill-ids">
+                @foreach (var skill in allSkills)
+                {
+                    <option value="@skill.Id">@skill.Name (Level @skill.RequiredLevel)</option>
+                }
+            </select>
+            <div class="tag-selector" data-tag-selector data-source-select-id="build-skill-ids" data-label="skills"></div>
+            <span asp-validation-for="SkillIds" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ItemIds" class="form-label">Items</label>
+            <select asp-for="ItemIds" class="form-control build-multi-select-native" multiple size="8" id="build-item-ids">
+                @foreach (var item in allItems)
+                {
+                    <option value="@item.Id">@item.Name (@item.Type, @item.Rarity, Power @item.Power)</option>
+                }
+            </select>
+            <div class="tag-selector" data-tag-selector data-source-select-id="build-item-ids" data-label="items"></div>
+            <span asp-validation-for="ItemIds" class="text-danger"></span>
         </div>
 
         <div class="form-actions">
@@ -83,6 +93,243 @@
     </form>
 </section>
 
+<style>
+    .build-multi-select-native {
+        display: none;
+    }
+
+    .tag-selector {
+        border: 1px solid rgba(240, 225, 180, 0.28);
+        border-radius: 8px;
+        padding: 0.75rem;
+        background: rgba(10, 9, 8, 0.65);
+    }
+
+    .tag-selector-search {
+        width: 100%;
+        margin-bottom: 0.7rem;
+        padding: 0.42rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid rgba(240, 225, 180, 0.28);
+        background: rgba(10, 9, 8, 0.88);
+        color: var(--ink-ivory);
+    }
+
+    .tag-selector-empty {
+        margin: 0;
+        color: rgba(240, 225, 180, 0.72);
+        font-size: 0.9rem;
+    }
+
+    .tag-selector-block {
+        margin-top: 0.75rem;
+    }
+
+    .tag-selector-block:first-child {
+        margin-top: 0;
+    }
+
+    .tag-selector-label {
+        margin: 0 0 0.45rem;
+        color: rgba(240, 225, 180, 0.86);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .tag-selector-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.32rem 0.58rem;
+        border-radius: 999px;
+        border: 1px solid rgba(240, 225, 180, 0.35);
+        background: rgba(240, 225, 180, 0.1);
+        color: var(--ink-ivory);
+        font-size: 0.85rem;
+        line-height: 1.1;
+    }
+
+    .tag-chip button {
+        border: 0;
+        background: transparent;
+        color: rgba(240, 225, 180, 0.86);
+        font-size: 0.95rem;
+        line-height: 1;
+        padding: 0;
+    }
+
+    .tag-chip button:hover {
+        color: var(--accent-gold-bright);
+    }
+
+    .tag-available {
+        background: rgba(216, 179, 106, 0.08);
+        border: 1px dashed rgba(216, 179, 106, 0.5);
+        color: rgba(240, 225, 180, 0.92);
+        border-radius: 999px;
+        padding: 0.3rem 0.58rem;
+        font-size: 0.84rem;
+    }
+
+    .tag-available:hover {
+        border-color: rgba(241, 209, 138, 0.85);
+        color: var(--accent-gold-bright);
+    }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const selectors = document.querySelectorAll("[data-tag-selector]");
+            selectors.forEach((container) => {
+                const sourceId = container.dataset.sourceSelectId;
+                const label = container.dataset.label || "items";
+                const sourceSelect = document.getElementById(sourceId);
+                if (!sourceSelect) {
+                    return;
+                }
+
+                const options = Array.from(sourceSelect.options).map((opt) => ({
+                    value: opt.value,
+                    text: opt.text
+                }));
+
+                let query = "";
+                const content = document.createElement("div");
+
+                const search = document.createElement("input");
+                search.type = "search";
+                search.className = "tag-selector-search";
+                search.placeholder = `Search ${label}...`;
+                search.addEventListener("input", (e) => {
+                    query = e.target.value.toLowerCase();
+                    render();
+                });
+
+                container.innerHTML = "";
+                container.append(search, content);
+
+                const getSelectedValues = () => new Set(
+                    Array.from(sourceSelect.options)
+                        .filter((opt) => opt.selected)
+                        .map((opt) => opt.value)
+                );
+
+                const setOptionSelected = (value, selected) => {
+                    const option = Array.from(sourceSelect.options).find((opt) => opt.value === value);
+                    if (option) {
+                        option.selected = selected;
+                    }
+                };
+
+                const createSelectedChip = (entry) => {
+                    const chip = document.createElement("span");
+                    chip.className = "tag-chip";
+                    chip.append(document.createTextNode(entry.text));
+
+                    const removeButton = document.createElement("button");
+                    removeButton.type = "button";
+                    removeButton.setAttribute("aria-label", `Remove ${entry.text}`);
+                    removeButton.textContent = "x";
+                    removeButton.addEventListener("click", () => {
+                        setOptionSelected(entry.value, false);
+                        render();
+                    });
+
+                    chip.append(removeButton);
+                    return chip;
+                };
+
+                const createAvailableChip = (entry) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "tag-available";
+                    button.textContent = `+ ${entry.text}`;
+                    button.addEventListener("click", () => {
+                        setOptionSelected(entry.value, true);
+                        render();
+                    });
+                    return button;
+                };
+
+                const render = () => {
+                    content.innerHTML = "";
+                    const selectedValues = getSelectedValues();
+
+                    search.value = query;
+
+                    const selectedBlock = document.createElement("div");
+                    selectedBlock.className = "tag-selector-block";
+
+                    const selectedLabel = document.createElement("p");
+                    selectedLabel.className = "tag-selector-label";
+                    selectedLabel.textContent = "Selected";
+                    selectedBlock.append(selectedLabel);
+
+                    const selectedWrap = document.createElement("div");
+                    selectedWrap.className = "tag-selector-list";
+
+                    const selectedEntries = options.filter((entry) => selectedValues.has(entry.value));
+                    if (selectedEntries.length === 0) {
+                        const empty = document.createElement("p");
+                        empty.className = "tag-selector-empty";
+                        empty.textContent = `No ${label} selected.`;
+                        selectedBlock.append(empty);
+                    } else {
+                        selectedEntries.forEach((entry) => {
+                            selectedWrap.append(createSelectedChip(entry));
+                        });
+                        selectedBlock.append(selectedWrap);
+                    }
+
+                    const availableBlock = document.createElement("div");
+                    availableBlock.className = "tag-selector-block";
+
+                    const availableLabel = document.createElement("p");
+                    availableLabel.className = "tag-selector-label";
+                    availableLabel.textContent = "Available";
+                    availableBlock.append(availableLabel);
+
+                    const availableWrap = document.createElement("div");
+                    availableWrap.className = "tag-selector-list";
+
+                    const availableEntries = options.filter((entry) => {
+                        if (selectedValues.has(entry.value)) {
+                            return false;
+                        }
+
+                        if (!query) {
+                            return true;
+                        }
+
+                        return entry.text.toLowerCase().includes(query);
+                    });
+                    if (availableEntries.length === 0) {
+                        const empty = document.createElement("p");
+                        empty.className = "tag-selector-empty";
+                        empty.textContent = query
+                            ? `No ${label} match \"${query}\".`
+                            : `All ${label} are selected.`;
+                        availableBlock.append(empty);
+                    } else {
+                        availableEntries.forEach((entry) => {
+                            availableWrap.append(createAvailableChip(entry));
+                        });
+                        availableBlock.append(availableWrap);
+                    }
+
+                    content.append(selectedBlock, availableBlock);
+                };
+
+                render();
+            });
+        })();
+    </script>
 }

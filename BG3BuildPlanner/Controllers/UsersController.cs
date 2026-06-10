@@ -86,6 +86,7 @@ namespace BG3BuildPlanner.Controllers
                 {
                     u.Id,
                     u.Username,
+                    u.ProfileImageUrl,
                     BuildCount = u.Builds.Count(b => b.DeletedAt == null),
                     Builds = u.Builds
                         .Where(b => b.DeletedAt == null)

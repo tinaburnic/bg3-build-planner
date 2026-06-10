@@ -13,8 +13,5 @@ namespace BG3BuildPlanner.Models.Dto
 
         [Range(1, int.MaxValue)]
         public int BuildId { get; set; }
-
-        [Range(1, int.MaxValue)]
-        public int UserId { get; set; }
     }
 }

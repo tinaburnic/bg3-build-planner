@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BG3BuildPlanner.Data;
 using BG3BuildPlanner.Data.Queries;
 using BG3BuildPlanner.Models.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BG3BuildPlanner.Controllers.Api
 {
     [ApiController]
+    [Authorize]
     [Route("api/ratings")]
     public class RatingsApiController : ControllerBase
     {
@@ -22,6 +25,7 @@ namespace BG3BuildPlanner.Controllers.Api
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<RatingDto>>> GetRatings()
         {
             var ratings = await _dbContext.Ratings
@@ -42,6 +46,7 @@ namespace BG3BuildPlanner.Controllers.Api
         }
 
         [HttpGet("search")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<RatingDto>>> SearchRatings([FromQuery] int? id, [FromQuery] int? buildId, [FromQuery] int? userId, [FromQuery] string? term)
         {
             var query = _dbContext.Ratings
@@ -86,6 +91,7 @@ namespace BG3BuildPlanner.Controllers.Api
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<RatingDto>> GetRatingById(int id)
         {
             var rating = await _dbContext.Ratings
@@ -113,6 +119,12 @@ namespace BG3BuildPlanner.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<RatingDto>> CreateRating([FromBody] RatingCreateDto dto)
         {
+            var currentUserId = GetCurrentUserId();
+            if (!currentUserId.HasValue)
+            {
+                return Unauthorized();
+            }
+
             var buildExists = await _dbContext.Builds
                 .Active()
                 .AnyAsync(b => b.Id == dto.BuildId);
@@ -122,13 +134,27 @@ namespace BG3BuildPlanner.Controllers.Api
                 return ValidationProblem(ModelState);
             }
 
+            var build = await _dbContext.Builds
+                .Active()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(b => b.Id == dto.BuildId);
+            if (build == null)
+            {
+                ModelState.AddModelError(nameof(dto.BuildId), "Build not found.");
+                return ValidationProblem(ModelState);
+            }
+
+            if (build.UserId == currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             var userExists = await _dbContext.Users
                 .Active()
-                .AnyAsync(u => u.Id == dto.UserId);
+                .AnyAsync(u => u.Id == currentUserId.Value);
             if (!userExists)
             {
-                ModelState.AddModelError(nameof(dto.UserId), "User not found.");
-                return ValidationProblem(ModelState);
+                return Unauthorized();
             }
 
             var rating = new Rating
@@ -137,7 +163,7 @@ namespace BG3BuildPlanner.Controllers.Api
                 Comment = dto.Comment,
                 CreatedAt = DateTime.UtcNow,
                 BuildId = dto.BuildId,
-                UserId = dto.UserId,
+                UserId = currentUserId.Value,
                 Build = null!,
                 User = null!
             };
@@ -161,10 +187,21 @@ namespace BG3BuildPlanner.Controllers.Api
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateRating(int id, [FromBody] RatingUpdateDto dto)
         {
+            var currentUserId = GetCurrentUserId();
+            if (!currentUserId.HasValue)
+            {
+                return Unauthorized();
+            }
+
             var rating = await _dbContext.Ratings.FirstOrDefaultAsync(r => r.Id == id);
             if (rating == null)
             {
                 return NotFound();
+            }
+
+            if (rating.UserId != currentUserId.Value)
+            {
+                return Forbid();
             }
 
             var buildExists = await _dbContext.Builds
@@ -176,19 +213,9 @@ namespace BG3BuildPlanner.Controllers.Api
                 return ValidationProblem(ModelState);
             }
 
-            var userExists = await _dbContext.Users
-                .Active()
-                .AnyAsync(u => u.Id == dto.UserId);
-            if (!userExists)
-            {
-                ModelState.AddModelError(nameof(dto.UserId), "User not found.");
-                return ValidationProblem(ModelState);
-            }
-
             rating.Score = dto.Score;
             rating.Comment = dto.Comment;
             rating.BuildId = dto.BuildId;
-            rating.UserId = dto.UserId;
 
             await _dbContext.SaveChangesAsync();
             return NoContent();
@@ -197,15 +224,32 @@ namespace BG3BuildPlanner.Controllers.Api
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteRating(int id)
         {
+            var currentUserId = GetCurrentUserId();
+            if (!currentUserId.HasValue)
+            {
+                return Unauthorized();
+            }
+
             var rating = await _dbContext.Ratings.FirstOrDefaultAsync(r => r.Id == id);
             if (rating == null)
             {
                 return NotFound();
             }
 
+            if (rating.UserId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             _dbContext.Ratings.Remove(rating);
             await _dbContext.SaveChangesAsync();
             return NoContent();
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.TryParse(userIdValue, out var userId) ? userId : null;
         }
     }
 }
