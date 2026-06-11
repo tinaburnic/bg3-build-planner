@@ -12,7 +12,14 @@ namespace BG3BuildPlanner.Data
 	{
 		public static async Task InitializeAsync(ApplicationDbContext context, RoleManager<IdentityRole<int>> roleManager, UserManager<AppUser> userManager)
 		{
-			await context.Database.MigrateAsync();
+			if (context.Database.IsRelational())
+			{
+				await context.Database.MigrateAsync();
+			}
+			else
+			{
+				await context.Database.EnsureCreatedAsync();
+			}
 
 			await SeedRoles(roleManager);
 

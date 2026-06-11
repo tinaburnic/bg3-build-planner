@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="BG3BuildPlanner.IntegrationTests/BG3BuildPlanner.IntegrationTests.csproj" />
   <Project Path="BG3BuildPlanner/BG3BuildPlanner.csproj" />
 </Solution>
