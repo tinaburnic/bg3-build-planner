@@ -41,6 +41,17 @@
                             <a class="nav-link" asp-area="" asp-controller="Skill" asp-action="Index">Skills</a>
                         </li>
                     </ul>
+                    <form class="global-search-form" asp-controller="Home" asp-action="Search" method="get" role="search">
+                        <label class="visually-hidden" for="global-search-term">Search the compendium</label>
+                        <input id="global-search-term"
+                               class="global-search-input"
+                               type="search"
+                               name="term"
+                               value="@Context.Request.Query["term"]"
+                               placeholder="Search characters, builds, skills, items"
+                               autocomplete="off" />
+                        <button class="global-search-button" type="submit">Search</button>
+                    </form>
                     <partial name="_LoginPartial" />
                 </div>
             </div>

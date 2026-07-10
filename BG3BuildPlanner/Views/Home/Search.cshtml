@@ -1,0 +1,55 @@
+@model BG3BuildPlanner.Models.Search.GlobalSearchViewModel
+
+@{
+    ViewData["Title"] = "Search";
+}
+
+<section class="global-search-shell reveal-up" aria-label="Global Search Results">
+    <p class="section-label">Global Search</p>
+    <h1 class="global-search-title">Search the Planner</h1>
+    <p class="global-search-lead">
+        Find matching characters, builds, skills, and items from one place.
+    </p>
+
+    <form class="global-search-hero-form" asp-action="Search" method="get" role="search">
+        <label class="visually-hidden" for="search-term-page">Search term</label>
+        <input id="search-term-page"
+               class="global-search-input"
+               type="search"
+               name="term"
+               value="@Model.Term"
+               placeholder="Search by name or title"
+               autocomplete="off" />
+        <button class="btn-gold" type="submit">Search</button>
+    </form>
+
+    @if (!Model.HasQuery)
+    {
+        <div class="global-search-empty-state">
+            Enter a search term to look across characters, builds, skills, and items.
+        </div>
+    }
+    else
+    {
+        <div class="global-search-summary">
+            <span>@Model.TotalResults results for</span>
+            <strong>@Model.Term</strong>
+        </div>
+
+        @if (Model.TotalResults == 0)
+        {
+            <div class="global-search-empty-state">
+                No results matched your search. Try a broader term.
+            </div>
+        }
+        else
+        {
+            <div class="global-search-groups">
+                @await Html.PartialAsync("_GlobalSearchGroup", ("Characters", Model.Characters))
+                @await Html.PartialAsync("_GlobalSearchGroup", ("Builds", Model.Builds))
+                @await Html.PartialAsync("_GlobalSearchGroup", ("Skills", Model.Skills))
+                @await Html.PartialAsync("_GlobalSearchGroup", ("Items", Model.Items))
+            </div>
+        }
+    }
+</section>

@@ -1,0 +1,32 @@
+@model (string Heading, IReadOnlyList<BG3BuildPlanner.Models.Search.GlobalSearchResultItemViewModel> Results)
+
+@if (Model.Results.Count > 0)
+{
+    <section class="global-search-group">
+        <div class="global-search-group-header">
+            <h2>@Model.Heading</h2>
+            <span>@Model.Results.Count</span>
+        </div>
+
+        <div class="global-search-grid">
+            @foreach (var result in Model.Results)
+            {
+                <a asp-controller="@result.Controller"
+                   asp-action="Details"
+                   asp-route-id="@result.Id"
+                   class="global-search-card">
+                    <p class="global-search-type">@result.TypeLabel</p>
+                    <h3>@result.Title</h3>
+                    @if (!string.IsNullOrWhiteSpace(result.Subtitle))
+                    {
+                        <p class="global-search-subtitle">@result.Subtitle</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(result.Description))
+                    {
+                        <p class="global-search-description">@result.Description</p>
+                    }
+                </a>
+            }
+        </div>
+    </section>
+}
