@@ -855,6 +855,77 @@ a:hover {
   font-size: 0.9rem;
 }
 
+/* ── Global form-control dark override ──────────────────────── */
+.form-control {
+  background: rgba(9, 8, 7, 0.82);
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  color: var(--ink-ivory);
+  border-radius: 10px;
+}
+
+.form-control:focus {
+  background: rgba(12, 10, 8, 0.92);
+  border-color: rgba(216, 179, 106, 0.65);
+  color: var(--ink-ivory);
+  box-shadow: 0 0 0 0.1rem #000, 0 0 0 0.22rem rgba(216, 179, 106, 0.4);
+}
+
+.form-control::placeholder {
+  color: rgba(240, 232, 210, 0.45);
+}
+
+/* ── Profile edit form ───────────────────────────────────────── */
+.profile-edit-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #e7cf9a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.profile-edit-input {
+  display: block;
+  width: 100%;
+  background: rgba(9, 8, 7, 0.82);
+  border: 1px solid rgba(216, 179, 106, 0.35);
+  color: var(--ink-ivory);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+}
+
+.profile-edit-input:focus {
+  outline: none;
+  border-color: rgba(216, 179, 106, 0.65);
+  box-shadow: 0 0 0 0.1rem #000, 0 0 0 0.22rem rgba(216, 179, 106, 0.4);
+}
+
+.profile-edit-input::placeholder {
+  color: rgba(240, 232, 210, 0.45);
+}
+
+.profile-edit-password-section {
+  border: 1px solid rgba(216, 179, 106, 0.22);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  background: rgba(18, 15, 12, 0.55);
+}
+
+.profile-edit-password-section legend {
+  padding: 0 0.45rem;
+  font-size: 0.9rem;
+}
+
+.profile-edit-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
 .build-index-actions {
   display: flex;
   flex-wrap: wrap;

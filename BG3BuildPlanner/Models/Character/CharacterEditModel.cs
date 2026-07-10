@@ -11,7 +11,7 @@ namespace BG3BuildPlanner.Models.Character
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [Url]
+        [RegularExpression(@"^(https?://|ftp://|/).+", ErrorMessage = "Portrait URL must be a valid URL or a root-relative path starting with /.")]
         public string? PortraitUrl { get; set; }
 
         [Required]

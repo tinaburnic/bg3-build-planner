@@ -164,12 +164,13 @@ namespace BG3BuildPlanner.Controllers
                 return Forbid();
             }
 
+            ViewData["IsOwnProfile"] = currentUserId == user.Id.ToString();
+
             var model = new UserEditModel
             {
                 Id = user.Id,
                 Username = user.Username ?? string.Empty,
-                Email = user.Email ?? string.Empty,
-                PasswordHash = string.Empty
+                Email = user.Email ?? string.Empty
             };
 
             return View(model);
@@ -195,27 +196,35 @@ namespace BG3BuildPlanner.Controllers
                 return Forbid();
             }
 
+            // Optional password: validate min length only when a value is provided
+            if (!string.IsNullOrWhiteSpace(model.NewPassword) && model.NewPassword.Length < 6)
+            {
+                ModelState.AddModelError(nameof(UserEditModel.NewPassword), "Password must be at least 6 characters.");
+            }
+
             if (!ModelState.IsValid)
             {
                 model.Id = user.Id;
                 model.Username = user.Username ?? string.Empty;
                 model.Email = user.Email ?? string.Empty;
-                model.PasswordHash = string.Empty;
+                model.NewPassword = null;
+                model.ConfirmPassword = null;
+                ViewData["IsOwnProfile"] = currentUserId == user.Id.ToString();
                 return View(model);
             }
 
-            var username = model.Username ?? string.Empty;
-            var email = model.Email ?? string.Empty;
-            var password = model.PasswordHash ?? string.Empty;
+            user.Username = model.Username;
+            user.Email = model.Email;
+            user.NormalizedUserName = model.Username.ToUpperInvariant();
+            user.NormalizedEmail = model.Email.ToUpperInvariant();
 
-            user.Username = username;
-            user.Email = email;
-            user.NormalizedUserName = username.ToUpperInvariant();
-            user.NormalizedEmail = email.ToUpperInvariant();
-            user.PasswordHash = _passwordHasher.HashPassword(user, password);
-            user.SecurityStamp = Guid.NewGuid().ToString();
+            if (!string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+                user.SecurityStamp = Guid.NewGuid().ToString();
+            }
+
             user.ConcurrencyStamp = Guid.NewGuid().ToString();
-
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Details), new { id = user.Id });
         }

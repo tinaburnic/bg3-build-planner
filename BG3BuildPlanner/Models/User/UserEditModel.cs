@@ -16,8 +16,11 @@ namespace BG3BuildPlanner.Models.User
         [StringLength(200)]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
+        /// <summary>Leave blank to keep the current password.</summary>
         [StringLength(200)]
-        public string PasswordHash { get; set; } = string.Empty;
+        public string? NewPassword { get; set; }
+
+        [Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match.")]
+        public string? ConfirmPassword { get; set; }
     }
 }
